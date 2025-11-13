@@ -1,0 +1,72 @@
+{
+  "scenarios": [
+    {
+      "id": "salary-negotiation",
+      "file": "salary-negotiation.json",
+      "order": 1,
+      "featured": true
+    },
+    {
+      "id": "hr-disciplinary",
+      "file": "hr-disciplinary.json",
+      "order": 2,
+      "featured": true
+    },
+    {
+      "id": "sales-gatekeeper",
+      "file": "sales-gatekeeper.json",
+      "order": 3,
+      "featured": true
+    },
+    {
+      "id": "client-escalation",
+      "file": "client-escalation.json",
+      "order": 4,
+      "featured": true
+    }
+  ],
+  "voices": {
+    "alloy": {
+      "gender": "neutral",
+      "age": "30s-40s",
+      "description": "Balanced, professional, neutral tone - good for colleagues",
+      "sample_url": null
+    },
+    "echo": {
+      "gender": "male",
+      "age": "40s-50s",
+      "description": "Authoritative, senior male executive - good for bosses",
+      "sample_url": null
+    },
+    "fable": {
+      "gender": "male",
+      "age": "30s",
+      "description": "Younger male, friendly yet professional - good for peers",
+      "sample_url": null
+    },
+    "onyx": {
+      "gender": "male",
+      "age": "50s-60s",
+      "description": "Deep, serious, senior executive - good for C-suite",
+      "sample_url": null
+    },
+    "nova": {
+      "gender": "female",
+      "age": "40s-50s",
+      "description": "Warm yet firm professional female - excellent for senior female bosses",
+      "sample_url": null
+    },
+    "shimmer": {
+      "gender": "female",
+      "age": "30s",
+      "description": "Energetic, expressive, younger female - good for assistants/colleagues",
+      "sample_url": null
+    },
+    "verse": {
+      "gender": "female",
+      "age": "30s-40s",
+      "description": "Professional, warm female - versatile for various roles",
+      "sample_url": null
+    }
+  }
+}
