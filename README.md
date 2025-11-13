@@ -224,8 +224,8 @@ npx wrangler pages deploy dist --project-name paws
 ```
 
 Your app is available at:
-- Production: `https://paws-cai.pages.dev`
-- Latest: `https://49ebb0bf.paws-cai.pages.dev`
+- Production: `https://paws-cai.pages.dev` ⭐ (Fixed URL - always points to latest)
+- Latest Deploy: `https://77ef69c1.paws-cai.pages.dev`
 
 ---
 
@@ -369,8 +369,8 @@ This is an MVP prototype. For the next phase:
 
 ## 📊 Current URLs
 
-- **Production**: https://paws-cai.pages.dev
-- **Latest Deployment**: https://49ebb0bf.paws-cai.pages.dev
+- **Production (Fixed URL)**: https://paws-cai.pages.dev ⭐
+- **Latest Deployment**: https://77ef69c1.paws-cai.pages.dev
 - **GitHub**: https://github.com/Alfredlechat/Hardconvos.git
 
 ---
