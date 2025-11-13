@@ -13,8 +13,11 @@
     "test": "curl http://localhost:3000"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "hono": "^4.10.5",
-    "openai": "^6.8.1"
+    "openai": "^6.8.1",
+    "stripe": "^19.3.1",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@hono/vite-build": "^1.2.0",

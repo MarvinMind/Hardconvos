@@ -5,6 +5,15 @@
   "pages_build_output_dir": "./dist",
   "compatibility_flags": [
     "nodejs_compat"
+  ],
+  // D1 Database for user management and subscriptions
+  // After creating the database via dashboard, uncomment and add the database_id
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "paws-users",
+      "database_id": "YOUR_DATABASE_ID_HERE"
+    }
   ]
   // "vars": {
   //   "MY_VAR": "my-variable"
