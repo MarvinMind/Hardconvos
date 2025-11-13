@@ -117,8 +117,9 @@ class ArtificialClient {
       const offer = await this.pc.createOffer()
       await this.pc.setLocalDescription(offer)
       
-      // Step 3: Send offer to OpenAI
-      const sdpResponse = await fetch('https://api.openai.com/v1/realtime/sessions', {
+      // Step 3: Send offer to OpenAI Realtime
+      // Note: The correct endpoint is /v1/realtime with model as query param
+      const sdpResponse = await fetch('https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${client_secret}`,
@@ -128,7 +129,9 @@ class ArtificialClient {
       })
       
       if (!sdpResponse.ok) {
-        throw new Error('Failed to establish WebRTC connection')
+        const errorText = await sdpResponse.text()
+        console.error('WebRTC connection error:', sdpResponse.status, errorText)
+        throw new Error(`Failed to establish WebRTC connection: ${sdpResponse.status}`)
       }
       
       const answerSdp = await sdpResponse.text()
