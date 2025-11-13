@@ -1,0 +1,4 @@
+# OpenAI API Key for local development
+# Get your key from: https://platform.openai.com/api-keys
+# Copy this file to .dev.vars and add your actual key
+OPENAI_API_KEY=sk-your-openai-api-key-here
