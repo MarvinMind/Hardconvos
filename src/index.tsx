@@ -925,7 +925,715 @@ Format as JSON:
   }
 })
 
-// Main page - redirect to setup
+// ============================================================================
+// FRONTEND PAGES
+// ============================================================================
+
+// Login page
+app.get('/login', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login - PAWS</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+        <div class="container mx-auto px-4 py-16 max-w-md">
+            <!-- Logo -->
+            <div class="text-center mb-8">
+                <h1 class="text-5xl mb-2">🐾</h1>
+                <h2 class="text-3xl font-bold mb-2">PAWS</h2>
+                <p class="text-slate-400">Personalized Anxiety Work-through System</p>
+            </div>
+
+            <!-- Login Form -->
+            <div class="bg-slate-800 rounded-lg p-8 border border-slate-700">
+                <h3 class="text-2xl font-semibold mb-6">Welcome Back</h3>
+                
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email</label>
+                        <input type="email" id="email" required
+                            class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Password</label>
+                        <input type="password" id="password" required
+                            class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
+                    </div>
+
+                    <div id="error" class="hidden bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm"></div>
+
+                    <button type="submit" id="submitBtn"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Login
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center text-sm text-slate-400">
+                    Don't have an account? <a href="/register" class="text-blue-400 hover:text-blue-300">Sign up</a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const form = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const errorDiv = document.getElementById('error');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                // Disable button
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Logging in...';
+                errorDiv.classList.add('hidden');
+
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Success - redirect to setup
+                        window.location.href = '/setup';
+                    } else {
+                        // Show error
+                        errorDiv.textContent = data.error || 'Login failed';
+                        errorDiv.classList.remove('hidden');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Login';
+                    }
+                } catch (error) {
+                    errorDiv.textContent = 'Network error. Please try again.';
+                    errorDiv.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Login';
+                }
+            });
+        </script>
+    </body>
+    </html>
+  `)
+})
+
+// Register page
+app.get('/register', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sign Up - PAWS</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+        <div class="container mx-auto px-4 py-16 max-w-md">
+            <!-- Logo -->
+            <div class="text-center mb-8">
+                <h1 class="text-5xl mb-2">🐾</h1>
+                <h2 class="text-3xl font-bold mb-2">PAWS</h2>
+                <p class="text-slate-400">Get 2 free minutes to try it out</p>
+            </div>
+
+            <!-- Register Form -->
+            <div class="bg-slate-800 rounded-lg p-8 border border-slate-700">
+                <h3 class="text-2xl font-semibold mb-6">Create Account</h3>
+                
+                <form id="registerForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Name (Optional)</label>
+                        <input type="text" id="name"
+                            class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email</label>
+                        <input type="email" id="email" required
+                            class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Password</label>
+                        <input type="password" id="password" required
+                            class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
+                        <p class="text-xs text-slate-400 mt-1">At least 8 characters, with a letter and number</p>
+                    </div>
+
+                    <div id="error" class="hidden bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm"></div>
+
+                    <button type="submit" id="submitBtn"
+                        class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center text-sm text-slate-400">
+                    Already have an account? <a href="/login" class="text-blue-400 hover:text-blue-300">Login</a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const form = document.getElementById('registerForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const errorDiv = document.getElementById('error');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const name = document.getElementById('name').value || null;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                // Disable button
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating account...';
+                errorDiv.classList.add('hidden');
+
+                try {
+                    const response = await fetch('/api/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ name, email, password })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Success - redirect to setup
+                        window.location.href = '/setup';
+                    } else {
+                        // Show error
+                        errorDiv.textContent = data.error || 'Registration failed';
+                        errorDiv.classList.remove('hidden');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Account';
+                    }
+                } catch (error) {
+                    errorDiv.textContent = 'Network error. Please try again.';
+                    errorDiv.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Account';
+                }
+            });
+        </script>
+    </body>
+    </html>
+  `)
+})
+
+// Pricing page
+app.get('/pricing', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pricing - PAWS</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+        <!-- Header -->
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-3xl">🐾 PAWS</a>
+                <div id="authNav" class="space-x-4">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <!-- Heading -->
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold mb-4">Choose Your Plan</h1>
+                <p class="text-xl text-slate-400">Practice difficult conversations with AI-powered coaching</p>
+            </div>
+
+            <!-- Pricing Cards -->
+            <div id="pricingContainer" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <!-- Loading state -->
+                <div class="col-span-full text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-4xl text-blue-400"></i>
+                    <p class="mt-4 text-slate-400">Loading pricing plans...</p>
+                </div>
+            </div>
+
+            <!-- Feature Comparison -->
+            <div class="bg-slate-800 rounded-lg p-8 border border-slate-700">
+                <h2 class="text-2xl font-bold mb-6 text-center">What You Get</h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <i class="fas fa-microphone text-4xl text-blue-400 mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">Real-Time Voice</h3>
+                        <p class="text-sm text-slate-400">Natural duplex conversation with AI personas</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-chart-line text-4xl text-green-400 mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">Performance Coaching</h3>
+                        <p class="text-sm text-slate-400">Get scored feedback after every session</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-fire text-4xl text-orange-400 mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">Dynamic Difficulty</h3>
+                        <p class="text-sm text-slate-400">AI adapts pressure based on your responses</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Check if user is authenticated
+            async function checkAuth() {
+                try {
+                    const response = await fetch('/api/auth/me', {
+                        credentials: 'include'
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        document.getElementById('authNav').innerHTML = \`
+                            <a href="/account" class="text-slate-300 hover:text-white">
+                                <i class="fas fa-user mr-1"></i>Account
+                            </a>
+                            <a href="/setup" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+                                Practice Now
+                            </a>
+                        \`;
+                        return data;
+                    } else {
+                        document.getElementById('authNav').innerHTML = \`
+                            <a href="/login" class="text-slate-300 hover:text-white">Login</a>
+                            <a href="/register" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg">
+                                Start Free
+                            </a>
+                        \`;
+                        return null;
+                    }
+                } catch (error) {
+                    return null;
+                }
+            }
+
+            // Load pricing plans
+            async function loadPricing() {
+                const userData = await checkAuth();
+                
+                try {
+                    const response = await fetch('/api/subscriptions/plans');
+                    const data = await response.json();
+                    
+                    const container = document.getElementById('pricingContainer');
+                    
+                    // Filter and organize plans
+                    const free = data.plans.find(p => p.type === 'free');
+                    const payperuse = data.plans.find(p => p.type === 'payperuse');
+                    const monthly = data.plans.filter(p => p.type === 'monthly');
+                    const annual = data.plans.filter(p => p.type === 'annual');
+                    
+                    // Render pricing cards
+                    let html = '';
+                    
+                    // Free tier
+                    html += renderCard(free, userData, false);
+                    
+                    // Pay-per-use
+                    html += renderCard(payperuse, userData, false);
+                    
+                    // Monthly plans (show Professional as recommended)
+                    monthly.forEach(plan => {
+                        const recommended = plan.id === 'professional_monthly';
+                        html += renderCard(plan, userData, recommended);
+                    });
+                    
+                    // Annual plans
+                    annual.forEach(plan => {
+                        html += renderCard(plan, userData, false, true);
+                    });
+                    
+                    container.innerHTML = html;
+                } catch (error) {
+                    document.getElementById('pricingContainer').innerHTML = \`
+                        <div class="col-span-full text-center py-12">
+                            <i class="fas fa-exclamation-triangle text-4xl text-red-400"></i>
+                            <p class="mt-4 text-slate-400">Failed to load pricing plans</p>
+                        </div>
+                    \`;
+                }
+            }
+
+            function renderCard(plan, userData, recommended = false, isAnnual = false) {
+                const isCurrentPlan = userData?.subscription?.plan_id === plan.id;
+                const actionButton = isCurrentPlan 
+                    ? '<button class="w-full bg-slate-600 text-white font-bold py-3 px-6 rounded-lg cursor-not-allowed" disabled>Current Plan</button>'
+                    : plan.type === 'free'
+                    ? '<a href="/register" class="block w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-all">Start Free</a>'
+                    : userData
+                    ? \`<button onclick="handleUpgrade('\${plan.id}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all">Upgrade</button>\`
+                    : '<a href="/register" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-all">Get Started</a>';
+                
+                return \`
+                    <div class="bg-slate-800 rounded-lg p-6 border \${recommended ? 'border-blue-500 border-2' : 'border-slate-700'} \${isCurrentPlan ? 'opacity-75' : ''} relative">
+                        \${recommended ? '<div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">RECOMMENDED</div>' : ''}
+                        \${isAnnual ? '<div class="absolute -top-3 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">17% OFF</div>' : ''}
+                        
+                        <h3 class="text-xl font-bold mb-2">\${plan.name}</h3>
+                        <div class="text-3xl font-bold mb-4">
+                            $\${plan.price.toFixed(2)}
+                            <span class="text-sm text-slate-400 font-normal">/\${plan.billing_cycle === 'one_time' ? 'purchase' : plan.billing_cycle === 'annual' ? 'year' : 'month'}</span>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <div class="text-2xl font-semibold text-blue-400">\${plan.minutes_included} minutes</div>
+                            <div class="text-sm text-slate-400">
+                                \${plan.type === 'payperuse' ? 'Reusable credits' : plan.type === 'annual' ? 'Per month (refreshes monthly)' : 'Per month (no rollover)'}
+                            </div>
+                        </div>
+                        
+                        <ul class="space-y-2 mb-6 text-sm">
+                            <li><i class="fas fa-check text-green-400 mr-2"></i>Real-time voice AI</li>
+                            <li><i class="fas fa-check text-green-400 mr-2"></i>Coaching feedback</li>
+                            <li><i class="fas fa-check text-green-400 mr-2"></i>Multiple scenarios</li>
+                            \${plan.type !== 'free' ? '<li><i class="fas fa-check text-green-400 mr-2"></i>Session history</li>' : ''}
+                            \${plan.type === 'monthly' || plan.type === 'annual' ? '<li><i class="fas fa-check text-green-400 mr-2"></i>Grace period (2 min)</li>' : ''}
+                        </ul>
+                        
+                        \${actionButton}
+                    </div>
+                \`;
+            }
+
+            async function handleUpgrade(planId) {
+                try {
+                    const response = await fetch('/api/checkout/create-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            plan_id: planId,
+                            success_url: window.location.origin + '/account?upgrade=success',
+                            cancel_url: window.location.origin + '/pricing?canceled=true'
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.checkout_url) {
+                        window.location.href = data.checkout_url;
+                    } else {
+                        alert('Stripe not configured yet. Coming soon!');
+                    }
+                } catch (error) {
+                    alert('Failed to start checkout. Please try again.');
+                }
+            }
+
+            // Load on page load
+            loadPricing();
+        </script>
+    </body>
+    </html>
+  `)
+})
+
+// Account dashboard page
+app.get('/account', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Account - PAWS</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+        <!-- Header -->
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-3xl">🐾 PAWS</a>
+                <div class="space-x-4">
+                    <a href="/pricing" class="text-slate-300 hover:text-white">Pricing</a>
+                    <a href="/setup" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">Practice</a>
+                    <button onclick="handleLogout()" class="text-slate-300 hover:text-white">
+                        <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 py-8 max-w-6xl">
+            <!-- Loading State -->
+            <div id="loadingState" class="text-center py-12">
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-400"></i>
+                <p class="mt-4 text-slate-400">Loading your account...</p>
+            </div>
+
+            <!-- Main Content (hidden until loaded) -->
+            <div id="mainContent" class="hidden space-y-6">
+                <!-- Profile Card -->
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-user mr-2 text-blue-400"></i>
+                        Profile
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-sm text-slate-400">Name</div>
+                            <div id="userName" class="text-lg font-semibold">-</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-slate-400">Email</div>
+                            <div id="userEmail" class="text-lg font-semibold">-</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-slate-400">Member Since</div>
+                            <div id="memberSince" class="text-lg font-semibold">-</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-slate-400">Email Verified</div>
+                            <div id="emailVerified" class="text-lg font-semibold">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subscription Card -->
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <div class="flex justify-between items-start mb-4">
+                        <h2 class="text-2xl font-bold">
+                            <i class="fas fa-credit-card mr-2 text-green-400"></i>
+                            Subscription
+                        </h2>
+                        <a href="/pricing" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-arrow-up mr-1"></i>Upgrade Plan
+                        </a>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div>
+                            <div class="text-sm text-slate-400">Current Plan</div>
+                            <div id="currentPlan" class="text-lg font-semibold">-</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-slate-400">Status</div>
+                            <div id="planStatus" class="text-lg font-semibold">-</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-slate-400">Renews On</div>
+                            <div id="renewsOn" class="text-lg font-semibold">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Credits Card -->
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <div class="flex justify-between items-start mb-4">
+                        <h2 class="text-2xl font-bold">
+                            <i class="fas fa-clock mr-2 text-yellow-400"></i>
+                            Available Time
+                        </h2>
+                        <button onclick="handleAddMinutes()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-plus mr-1"></i>Add More Minutes
+                        </button>
+                    </div>
+                    
+                    <div class="text-center py-8">
+                        <div id="remainingTime" class="text-6xl font-bold text-blue-400 mb-2">-</div>
+                        <div class="text-slate-400">minutes remaining</div>
+                        <div id="creditType" class="text-sm text-slate-500 mt-2">-</div>
+                    </div>
+                    
+                    <div class="bg-slate-900 rounded-lg p-4 mt-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Original Allocation</span>
+                            <span id="originalAllocation" class="font-semibold">-</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2 mt-2">
+                            <div id="usageBar" class="bg-blue-500 h-2 rounded-full transition-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usage History Card -->
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-history mr-2 text-purple-400"></i>
+                        Recent Sessions
+                    </h2>
+                    
+                    <div id="usageHistory" class="space-y-2">
+                        <div class="text-center py-8 text-slate-400">
+                            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                            <p>Loading history...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="hidden text-center py-12">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
+                <p class="text-xl mb-4">Please log in to view your account</p>
+                <a href="/login" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg inline-block">
+                    Go to Login
+                </a>
+            </div>
+        </div>
+
+        <script>
+            async function loadAccount() {
+                try {
+                    const response = await fetch('/api/auth/me', {
+                        credentials: 'include'
+                    });
+                    
+                    if (!response.ok) {
+                        showError();
+                        return;
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Show main content
+                    document.getElementById('loadingState').classList.add('hidden');
+                    document.getElementById('mainContent').classList.remove('hidden');
+                    
+                    // Populate profile
+                    document.getElementById('userName').textContent = data.user.name || 'Not set';
+                    document.getElementById('userEmail').textContent = data.user.email;
+                    document.getElementById('memberSince').textContent = new Date(data.user.created_at * 1000).toLocaleDateString();
+                    document.getElementById('emailVerified').textContent = data.user.email_verified ? '✅ Verified' : '⏳ Not verified';
+                    
+                    // Populate subscription
+                    if (data.subscription) {
+                        document.getElementById('currentPlan').textContent = formatPlanName(data.subscription.plan_id);
+                        document.getElementById('planStatus').textContent = data.subscription.status === 'active' ? '✅ Active' : '⏸️ ' + data.subscription.status;
+                        document.getElementById('renewsOn').textContent = new Date(data.subscription.period_end * 1000).toLocaleDateString();
+                    }
+                    
+                    // Populate credits
+                    if (data.credits) {
+                        document.getElementById('remainingTime').textContent = data.credits.balance_minutes;
+                        document.getElementById('creditType').textContent = formatCreditType(data.credits.type);
+                        document.getElementById('originalAllocation').textContent = data.credits.original_minutes || 0 + ' minutes';
+                        
+                        const usagePercent = ((data.credits.original_minutes - data.credits.balance_minutes) / data.credits.original_minutes * 100) || 0;
+                        document.getElementById('usageBar').style.width = usagePercent + '%';
+                    } else {
+                        document.getElementById('remainingTime').textContent = '0';
+                        document.getElementById('creditType').textContent = 'No active credits';
+                    }
+                    
+                    // Load usage history
+                    loadUsageHistory();
+                } catch (error) {
+                    showError();
+                }
+            }
+            
+            async function loadUsageHistory() {
+                try {
+                    const response = await fetch('/api/usage/history?limit=10', {
+                        credentials: 'include'
+                    });
+                    
+                    const data = await response.json();
+                    const container = document.getElementById('usageHistory');
+                    
+                    if (data.sessions && data.sessions.length > 0) {
+                        container.innerHTML = data.sessions.map(session => \`
+                            <div class="bg-slate-900 rounded-lg p-4 flex justify-between items-center">
+                                <div>
+                                    <div class="font-semibold">\${session.scenario_id || 'Practice Session'}</div>
+                                    <div class="text-sm text-slate-400">\${new Date(session.session_start * 1000).toLocaleString()}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-semibold">\${session.duration_minutes}m \${session.duration_seconds % 60}s</div>
+                                    <div class="text-sm text-slate-400">\${session.status}</div>
+                                </div>
+                            </div>
+                        \`).join('');
+                    } else {
+                        container.innerHTML = '<div class="text-center py-8 text-slate-400">No sessions yet. <a href="/setup" class="text-blue-400 hover:text-blue-300">Start practicing!</a></div>';
+                    }
+                } catch (error) {
+                    document.getElementById('usageHistory').innerHTML = '<div class="text-center py-8 text-red-400">Failed to load history</div>';
+                }
+            }
+            
+            function formatPlanName(planId) {
+                const names = {
+                    'free': 'Free Trial',
+                    'payperuse': 'Pay Per Use',
+                    'starter_monthly': 'Starter Monthly',
+                    'professional_monthly': 'Professional Monthly',
+                    'expert_monthly': 'Expert Monthly',
+                    'starter_annual': 'Starter Annual',
+                    'professional_annual': 'Professional Annual',
+                    'expert_annual': 'Expert Annual'
+                };
+                return names[planId] || planId;
+            }
+            
+            function formatCreditType(type) {
+                const types = {
+                    'free': 'Free tier (expires monthly)',
+                    'payperuse': 'Pay-per-use credits (no expiration)',
+                    'monthly': 'Monthly subscription (no rollover)',
+                    'annual': 'Annual subscription (refreshes monthly)',
+                    'grace': 'Grace period (2 minutes)'
+                };
+                return types[type] || type;
+            }
+            
+            function showError() {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('errorState').classList.remove('hidden');
+            }
+            
+            async function handleLogout() {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/login';
+            }
+            
+            async function handleAddMinutes() {
+                window.location.href = '/pricing';
+            }
+            
+            // Load on page load
+            loadAccount();
+        </script>
+    </body>
+    </html>
+  `)
+})
+
+// Main page - redirect to setup (or login if not authenticated)
 app.get('/', (c) => {
   return c.redirect('/setup')
 })
@@ -1037,6 +1745,26 @@ app.get('/practice', (c) => {
                           Configuring your personalized session...
                         </div>
                     </div>
+
+                    <!-- Timer & Balance Display -->
+                    <div id="timerDisplay" class="mb-6 p-4 bg-slate-900 rounded border border-slate-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-slate-400">Remaining Time:</span>
+                            <span id="remainingTime" class="text-2xl font-bold text-blue-400">--:--</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div id="timeBar" class="bg-blue-500 h-2 rounded-full transition-all" style="width: 100%"></div>
+                        </div>
+                        <div id="balanceWarning" class="hidden mt-2 text-xs text-yellow-400">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            <span>Low balance warning</span>
+                        </div>
+                        <div id="graceWarning" class="hidden mt-2 text-xs text-orange-400 font-semibold">
+                            <i class="fas fa-hourglass-half mr-1"></i>
+                            <span>Grace period: <span id="graceTime">2:00</span> remaining</span>
+                        </div>
+                    </div>
+
                     <!-- Start/Stop Button -->
                     <button id="startBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 mb-4">
                         <i class="fas fa-play mr-2"></i>
@@ -1098,6 +1826,259 @@ app.get('/practice', (c) => {
                 </div>
             </div>
         </div>
+
+        <!-- Upgrade Modal -->
+        <div id="upgradeModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <div class="bg-slate-800 rounded-lg p-8 max-w-md border border-slate-700">
+                <h2 class="text-2xl font-bold mb-4">
+                    <i class="fas fa-clock text-yellow-400 mr-2"></i>
+                    Credits Exhausted
+                </h2>
+                <p class="text-slate-300 mb-6">You've used all your available conversation time. Add more minutes to continue practicing!</p>
+                
+                <div class="space-y-3">
+                    <a href="/pricing" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-all">
+                        <i class="fas fa-arrow-up mr-2"></i>
+                        View Plans & Upgrade
+                    </a>
+                    <a href="/account" class="block w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-lg text-center transition-all">
+                        <i class="fas fa-user mr-2"></i>
+                        Go to Account
+                    </a>
+                    <button onclick="closeUpgradeModal()" class="w-full text-slate-400 hover:text-white py-2">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Timer and balance tracking
+            let userBalance = null;
+            let sessionId = null;
+            let sessionStartTime = null;
+            let heartbeatInterval = null;
+            let timerUpdateInterval = null;
+
+            // Check balance before allowing practice
+            async function checkBalance() {
+                try {
+                    const response = await fetch('/api/usage/balance', {
+                        credentials: 'include'
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        userBalance = data;
+                        updateTimerDisplay(data.balance_seconds);
+                        return data.balance_seconds > 0;
+                    } else {
+                        // Not authenticated - redirect to login
+                        window.location.href = '/login';
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Failed to check balance:', error);
+                    return false;
+                }
+            }
+
+            // Update timer display
+            function updateTimerDisplay(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById('remainingTime').textContent = 
+                    minutes + ':' + secs.toString().padStart(2, '0');
+                
+                // Update progress bar
+                if (userBalance && userBalance.original_seconds) {
+                    const percent = (seconds / userBalance.original_seconds) * 100;
+                    document.getElementById('timeBar').style.width = percent + '%';
+                    
+                    // Show warning if low (< 60 seconds or < 10%)
+                    if (seconds < 60 || percent < 10) {
+                        document.getElementById('balanceWarning').classList.remove('hidden');
+                    } else {
+                        document.getElementById('balanceWarning').classList.add('hidden');
+                    }
+                }
+            }
+
+            // Start session tracking
+            async function startSessionTracking(scenarioId) {
+                try {
+                    const response = await fetch('/api/usage/start', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ scenario_id: scenarioId })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        sessionId = data.session_id;
+                        sessionStartTime = Date.now();
+                        
+                        // Start heartbeat (every 5 seconds)
+                        heartbeatInterval = setInterval(sendHeartbeat, 5000);
+                        
+                        // Start timer update (every second)
+                        timerUpdateInterval = setInterval(updateLocalTimer, 1000);
+                        
+                        return true;
+                    } else {
+                        const error = await response.json();
+                        alert(error.message || 'Insufficient credits');
+                        showUpgradeModal();
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Failed to start session:', error);
+                    return false;
+                }
+            }
+
+            // Send heartbeat to server
+            async function sendHeartbeat() {
+                if (!sessionId) return;
+                
+                const elapsedSeconds = Math.floor((Date.now() - sessionStartTime) / 1000);
+                
+                try {
+                    const response = await fetch('/api/usage/heartbeat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            session_id: sessionId,
+                            duration_seconds: elapsedSeconds
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // Update remaining time
+                    if (data.available_seconds !== undefined) {
+                        updateTimerDisplay(data.available_seconds);
+                    }
+                    
+                    // Check if grace period
+                    if (data.grace_period) {
+                        const graceDiv = document.getElementById('graceWarning');
+                        graceDiv.classList.remove('hidden');
+                        const graceSeconds = data.grace_seconds_remaining || 120;
+                        const mins = Math.floor(graceSeconds / 60);
+                        const secs = graceSeconds % 60;
+                        document.getElementById('graceTime').textContent = 
+                            mins + ':' + secs.toString().padStart(2, '0');
+                    }
+                    
+                    // Check if should stop
+                    if (data.should_stop) {
+                        stopSessionTracking();
+                        showUpgradeModal();
+                        // Also stop the WebRTC conversation if it's running
+                        const stopBtn = document.getElementById('stopBtn');
+                        if (stopBtn && !stopBtn.classList.contains('hidden')) {
+                            stopBtn.click();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Heartbeat failed:', error);
+                }
+            }
+
+            // Update local timer display (runs every second)
+            function updateLocalTimer() {
+                if (!sessionStartTime || !userBalance) return;
+                
+                const elapsedSeconds = Math.floor((Date.now() - sessionStartTime) / 1000);
+                const remainingSeconds = Math.max(0, userBalance.balance_seconds - elapsedSeconds);
+                updateTimerDisplay(remainingSeconds);
+            }
+
+            // Stop session tracking
+            async function stopSessionTracking() {
+                if (heartbeatInterval) {
+                    clearInterval(heartbeatInterval);
+                    heartbeatInterval = null;
+                }
+                
+                if (timerUpdateInterval) {
+                    clearInterval(timerUpdateInterval);
+                    timerUpdateInterval = null;
+                }
+                
+                if (sessionId && sessionStartTime) {
+                    const elapsedSeconds = Math.floor((Date.now() - sessionStartTime) / 1000);
+                    
+                    try {
+                        await fetch('/api/usage/end', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                session_id: sessionId,
+                                duration_seconds: elapsedSeconds
+                            })
+                        });
+                    } catch (error) {
+                        console.error('Failed to end session:', error);
+                    }
+                }
+                
+                sessionId = null;
+                sessionStartTime = null;
+            }
+
+            // Show upgrade modal
+            function showUpgradeModal() {
+                document.getElementById('upgradeModal').classList.remove('hidden');
+            }
+
+            // Close upgrade modal
+            function closeUpgradeModal() {
+                document.getElementById('upgradeModal').classList.add('hidden');
+            }
+
+            // Override start button to check balance first
+            document.addEventListener('DOMContentLoaded', () => {
+                checkBalance(); // Check on page load
+                
+                const originalStartBtn = document.getElementById('startBtn');
+                if (originalStartBtn) {
+                    originalStartBtn.addEventListener('click', async (e) => {
+                        const hasBalance = await checkBalance();
+                        if (!hasBalance) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            showUpgradeModal();
+                            return false;
+                        }
+                        
+                        // Get scenario ID from URL params or default
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const scenarioId = urlParams.get('scenario') || 'default';
+                        
+                        // Start session tracking
+                        const started = await startSessionTracking(scenarioId);
+                        if (!started) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        }
+                    });
+                }
+                
+                // Hook into stop button
+                const stopBtn = document.getElementById('stopBtn');
+                if (stopBtn) {
+                    stopBtn.addEventListener('click', () => {
+                        stopSessionTracking();
+                    });
+                }
+            });
+        </script>
 
         <script src="/static/practice.js"></script>
     </body>
