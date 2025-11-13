@@ -1,9 +1,15 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { setCookie, getCookie, deleteCookie } from 'hono/cookie'
 import OpenAI from 'openai'
+import * as auth from './lib/auth'
+import * as db from './lib/db'
 
 type Bindings = {
   OPENAI_API_KEY: string
+  DB: D1Database
+  STRIPE_SECRET_KEY?: string
+  STRIPE_WEBHOOK_SECRET?: string
 }
 
 // Helper: Build dynamic scenario prompt from configuration
@@ -118,7 +124,675 @@ Begin the conversation at level ${temperMeter.startLevel}. Introduce yourself an
 const app = new Hono<{ Bindings: Bindings }>()
 
 // Enable CORS for all routes
-app.use('*', cors())
+app.use('*', cors({
+  origin: '*',
+  credentials: true,
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization']
+}))
+
+// Authentication middleware for protected routes
+const authMiddleware = async (c: any, next: any) => {
+  const token = getCookie(c, 'auth_token')
+  
+  if (!token) {
+    return c.json({ error: 'Unauthorized', message: 'No authentication token provided' }, 401)
+  }
+  
+  const payload = await auth.verifyToken(token)
+  
+  if (!payload) {
+    deleteCookie(c, 'auth_token')
+    return c.json({ error: 'Unauthorized', message: 'Invalid or expired token' }, 401)
+  }
+  
+  // Attach user info to context
+  c.set('userId', payload.userId)
+  c.set('userEmail', payload.email)
+  
+  await next()
+}
+
+// ============================================================================
+// AUTHENTICATION API ENDPOINTS
+// ============================================================================
+
+// Register new user (creates account + free tier subscription)
+app.post('/api/auth/register', async (c) => {
+  try {
+    const { DB } = c.env
+    const { email, password, name } = await c.req.json()
+    
+    // Validate input
+    if (!email || !password) {
+      return c.json({ error: 'Email and password are required' }, 400)
+    }
+    
+    if (!auth.isValidEmail(email)) {
+      return c.json({ error: 'Invalid email format' }, 400)
+    }
+    
+    const passwordValidation = auth.isValidPassword(password)
+    if (!passwordValidation.valid) {
+      return c.json({ error: passwordValidation.error }, 400)
+    }
+    
+    // Check if user already exists
+    const existingUser = await db.getUserByEmail(DB, email)
+    if (existingUser) {
+      return c.json({ error: 'User already exists with this email' }, 400)
+    }
+    
+    // Hash password and create user
+    const passwordHash = await auth.hashPassword(password)
+    const user = await db.createUser(DB, email, passwordHash, name || null)
+    
+    // Create free subscription with 2 minutes (120 seconds)
+    const subscription = await db.createFreeSubscription(DB, user.id)
+    
+    // Generate JWT token
+    const token = await auth.generateToken(user.id, user.email)
+    
+    // Set cookie (7 days)
+    setCookie(c, 'auth_token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'Lax',
+      maxAge: 60 * 60 * 24 * 7 // 7 days
+    })
+    
+    return c.json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        created_at: user.created_at
+      },
+      subscription: {
+        plan_id: subscription.plan_id,
+        status: subscription.status,
+        period_end: subscription.current_period_end
+      }
+    })
+  } catch (error: any) {
+    console.error('Registration error:', error)
+    return c.json({ 
+      error: 'Registration failed',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// Login user
+app.post('/api/auth/login', async (c) => {
+  try {
+    const { DB } = c.env
+    const { email, password } = await c.req.json()
+    
+    // Validate input
+    if (!email || !password) {
+      return c.json({ error: 'Email and password are required' }, 400)
+    }
+    
+    // Get user from database
+    const user = await db.getUserByEmail(DB, email)
+    if (!user) {
+      return c.json({ error: 'Invalid email or password' }, 401)
+    }
+    
+    // Verify password
+    const isValid = await auth.verifyPassword(password, user.password_hash)
+    if (!isValid) {
+      return c.json({ error: 'Invalid email or password' }, 401)
+    }
+    
+    // Check if account is active
+    if (user.status !== 'active') {
+      return c.json({ error: 'Account is suspended or inactive' }, 403)
+    }
+    
+    // Get subscription info
+    const subscription = await db.getUserSubscription(DB, user.id)
+    
+    // Generate JWT token
+    const token = await auth.generateToken(user.id, user.email)
+    
+    // Set cookie (7 days)
+    setCookie(c, 'auth_token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'Lax',
+      maxAge: 60 * 60 * 24 * 7 // 7 days
+    })
+    
+    return c.json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        created_at: user.created_at
+      },
+      subscription: subscription ? {
+        plan_id: subscription.plan_id,
+        status: subscription.status,
+        period_end: subscription.current_period_end
+      } : null
+    })
+  } catch (error: any) {
+    console.error('Login error:', error)
+    return c.json({ 
+      error: 'Login failed',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// Logout user
+app.post('/api/auth/logout', async (c) => {
+  deleteCookie(c, 'auth_token')
+  return c.json({ success: true, message: 'Logged out successfully' })
+})
+
+// Get current user profile (protected)
+app.get('/api/auth/me', authMiddleware, async (c) => {
+  try {
+    const { DB } = c.env
+    const userId = c.get('userId')
+    
+    // Get user from database
+    const user = await db.getUserById(DB, userId)
+    if (!user) {
+      return c.json({ error: 'User not found' }, 404)
+    }
+    
+    // Get subscription info
+    const subscription = await db.getUserSubscription(DB, userId)
+    
+    // Get credit balance
+    const creditBalance = await db.getCreditBalance(DB, userId)
+    
+    return c.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        created_at: user.created_at,
+        email_verified: user.email_verified === 1
+      },
+      subscription: subscription ? {
+        plan_id: subscription.plan_id,
+        status: subscription.status,
+        period_start: subscription.current_period_start,
+        period_end: subscription.current_period_end
+      } : null,
+      credits: creditBalance ? {
+        balance_seconds: creditBalance.balance_seconds,
+        balance_minutes: Math.floor(creditBalance.balance_seconds / 60),
+        period_end: creditBalance.period_end,
+        type: creditBalance.type
+      } : null
+    })
+  } catch (error: any) {
+    console.error('Get user error:', error)
+    return c.json({ 
+      error: 'Failed to get user profile',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// ============================================================================
+// USAGE TRACKING API ENDPOINTS
+// ============================================================================
+
+// Start a new conversation session (creates usage log)
+app.post('/api/usage/start', authMiddleware, async (c) => {
+  try {
+    const { DB } = c.env
+    const userId = c.get('userId')
+    const { scenario_id } = await c.req.json()
+    
+    // Check if user has available credits
+    const creditBalance = await db.getCreditBalance(DB, userId)
+    if (!creditBalance || creditBalance.balance_seconds <= 0) {
+      return c.json({ 
+        error: 'Insufficient credits',
+        message: 'You have no remaining conversation time. Please purchase more credits or upgrade your plan.'
+      }, 403)
+    }
+    
+    // Get user's subscription
+    const subscription = await db.getUserSubscription(DB, userId)
+    
+    // Create usage log
+    const sessionId = await db.createUsageLog(
+      DB,
+      userId,
+      subscription?.id || null,
+      scenario_id || null
+    )
+    
+    return c.json({
+      success: true,
+      session_id: sessionId,
+      available_seconds: creditBalance.balance_seconds,
+      available_minutes: Math.floor(creditBalance.balance_seconds / 60),
+      credit_type: creditBalance.type
+    })
+  } catch (error: any) {
+    console.error('Start session error:', error)
+    return c.json({ 
+      error: 'Failed to start session',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// Update session with heartbeat (tracks duration and deducts credits)
+app.post('/api/usage/heartbeat', authMiddleware, async (c) => {
+  try {
+    const { DB } = c.env
+    const userId = c.get('userId')
+    const { session_id, duration_seconds } = await c.req.json()
+    
+    if (!session_id || typeof duration_seconds !== 'number') {
+      return c.json({ error: 'session_id and duration_seconds are required' }, 400)
+    }
+    
+    // Get current credit balance
+    const creditBalance = await db.getCreditBalance(DB, userId)
+    if (!creditBalance) {
+      return c.json({ 
+        error: 'No active credits',
+        should_stop: true
+      }, 403)
+    }
+    
+    // Check if credits exhausted
+    if (creditBalance.balance_seconds <= 0) {
+      // Update session as completed
+      await db.updateUsageLog(DB, session_id, duration_seconds, 'completed')
+      
+      return c.json({
+        should_stop: true,
+        message: 'Credits exhausted',
+        available_seconds: 0,
+        grace_period: false
+      })
+    }
+    
+    // Check if in grace period (free tier: 90 seconds used, monthly: 90% used)
+    const usagePercent = (duration_seconds / (creditBalance.original_balance_seconds || 1)) * 100
+    const isFreeTier = creditBalance.type === 'free'
+    const isMonthly = creditBalance.type === 'monthly' || creditBalance.type === 'annual'
+    
+    let inGracePeriod = false
+    let graceSecondsRemaining = 0
+    
+    if (isFreeTier && duration_seconds >= 90) {
+      // Free tier: hard cutoff at 90 seconds (1:30)
+      await db.updateUsageLog(DB, session_id, 90, 'completed')
+      
+      return c.json({
+        should_stop: true,
+        message: 'Free tier limit reached (1:30 minutes)',
+        available_seconds: 0,
+        grace_period: false
+      })
+    } else if (isMonthly && usagePercent >= 90 && creditBalance.balance_seconds > 0) {
+      // Monthly: grace period at 90% usage
+      inGracePeriod = true
+      graceSecondsRemaining = 120 // 2 minutes grace period
+    }
+    
+    // Update session duration
+    await db.updateUsageLog(DB, session_id, duration_seconds, 'active')
+    
+    return c.json({
+      success: true,
+      should_stop: false,
+      available_seconds: creditBalance.balance_seconds,
+      available_minutes: Math.floor(creditBalance.balance_seconds / 60),
+      grace_period: inGracePeriod,
+      grace_seconds_remaining: inGracePeriod ? graceSecondsRemaining : 0
+    })
+  } catch (error: any) {
+    console.error('Heartbeat error:', error)
+    return c.json({ 
+      error: 'Failed to update session',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// End conversation session (finalize and deduct credits)
+app.post('/api/usage/end', authMiddleware, async (c) => {
+  try {
+    const { DB } = c.env
+    const userId = c.get('userId')
+    const { session_id, duration_seconds } = await c.req.json()
+    
+    if (!session_id || typeof duration_seconds !== 'number') {
+      return c.json({ error: 'session_id and duration_seconds are required' }, 400)
+    }
+    
+    // Get current credit balance
+    const creditBalance = await db.getCreditBalance(DB, userId)
+    if (!creditBalance) {
+      return c.json({ error: 'No active credits' }, 403)
+    }
+    
+    // Deduct credits (atomic operation)
+    const secondsToDeduct = Math.min(duration_seconds, creditBalance.balance_seconds)
+    await db.deductCredits(DB, creditBalance.id, secondsToDeduct)
+    
+    // Update session as completed
+    await db.updateUsageLog(DB, session_id, duration_seconds, 'completed')
+    
+    // Get updated balance
+    const updatedBalance = await db.getCreditBalance(DB, userId)
+    
+    return c.json({
+      success: true,
+      seconds_used: secondsToDeduct,
+      remaining_seconds: updatedBalance ? updatedBalance.balance_seconds : 0,
+      remaining_minutes: updatedBalance ? Math.floor(updatedBalance.balance_seconds / 60) : 0
+    })
+  } catch (error: any) {
+    console.error('End session error:', error)
+    return c.json({ 
+      error: 'Failed to end session',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// Get current credit balance
+app.get('/api/usage/balance', authMiddleware, async (c) => {
+  try {
+    const { DB } = c.env
+    const userId = c.get('userId')
+    
+    const creditBalance = await db.getCreditBalance(DB, userId)
+    
+    if (!creditBalance) {
+      return c.json({
+        balance_seconds: 0,
+        balance_minutes: 0,
+        type: 'none',
+        period_end: null
+      })
+    }
+    
+    return c.json({
+      balance_seconds: creditBalance.balance_seconds,
+      balance_minutes: Math.floor(creditBalance.balance_seconds / 60),
+      original_seconds: creditBalance.original_balance_seconds,
+      original_minutes: Math.floor(creditBalance.original_balance_seconds / 60),
+      type: creditBalance.type,
+      period_end: creditBalance.period_end
+    })
+  } catch (error: any) {
+    console.error('Get balance error:', error)
+    return c.json({ 
+      error: 'Failed to get balance',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// Get usage history
+app.get('/api/usage/history', authMiddleware, async (c) => {
+  try {
+    const { DB } = c.env
+    const userId = c.get('userId')
+    const limit = parseInt(c.req.query('limit') || '10')
+    
+    const result = await DB.prepare(`
+      SELECT id, session_start, duration_seconds, scenario_id, status
+      FROM usage_logs
+      WHERE user_id = ?
+      ORDER BY session_start DESC
+      LIMIT ?
+    `).bind(userId, limit).all()
+    
+    const sessions = result.results.map((row: any) => ({
+      id: row.id,
+      session_start: row.session_start,
+      duration_seconds: row.duration_seconds,
+      duration_minutes: Math.floor(row.duration_seconds / 60),
+      scenario_id: row.scenario_id,
+      status: row.status
+    }))
+    
+    return c.json({ sessions })
+  } catch (error: any) {
+    console.error('Get history error:', error)
+    return c.json({ 
+      error: 'Failed to get usage history',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// ============================================================================
+// STRIPE PAYMENT API ENDPOINTS (with placeholder keys)
+// ============================================================================
+
+// Get available subscription plans
+app.get('/api/subscriptions/plans', async (c) => {
+  try {
+    const { DB } = c.env
+    const plans = await db.getAllPlans(DB)
+    
+    // Format plans for frontend display
+    const formattedPlans = plans.map(plan => ({
+      id: plan.id,
+      name: plan.name,
+      type: plan.type,
+      price: plan.price_cents / 100, // Convert to dollars
+      price_cents: plan.price_cents,
+      minutes_included: plan.minutes_included,
+      billing_cycle: plan.billing_cycle,
+      active: plan.active === 1
+    }))
+    
+    return c.json({ plans: formattedPlans })
+  } catch (error: any) {
+    console.error('Get plans error:', error)
+    return c.json({ 
+      error: 'Failed to get plans',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// Get current user's subscription
+app.get('/api/subscriptions/current', authMiddleware, async (c) => {
+  try {
+    const { DB } = c.env
+    const userId = c.get('userId')
+    
+    const subscription = await db.getUserSubscription(DB, userId)
+    
+    if (!subscription) {
+      return c.json({ subscription: null })
+    }
+    
+    // Get plan details
+    const plan = await db.getPlanById(DB, subscription.plan_id)
+    
+    return c.json({
+      subscription: {
+        id: subscription.id,
+        plan_id: subscription.plan_id,
+        plan_name: plan?.name || 'Unknown',
+        status: subscription.status,
+        period_start: subscription.current_period_start,
+        period_end: subscription.current_period_end,
+        stripe_subscription_id: subscription.stripe_subscription_id
+      }
+    })
+  } catch (error: any) {
+    console.error('Get subscription error:', error)
+    return c.json({ 
+      error: 'Failed to get subscription',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// Create Stripe checkout session (placeholder implementation)
+app.post('/api/checkout/create-session', authMiddleware, async (c) => {
+  try {
+    const { DB, STRIPE_SECRET_KEY } = c.env
+    const userId = c.get('userId')
+    const { plan_id, success_url, cancel_url } = await c.req.json()
+    
+    if (!plan_id) {
+      return c.json({ error: 'plan_id is required' }, 400)
+    }
+    
+    // Get plan details
+    const plan = await db.getPlanById(DB, plan_id)
+    if (!plan) {
+      return c.json({ error: 'Invalid plan_id' }, 400)
+    }
+    
+    // Get user details
+    const user = await db.getUserById(DB, userId)
+    if (!user) {
+      return c.json({ error: 'User not found' }, 404)
+    }
+    
+    // Check if Stripe is configured
+    if (!STRIPE_SECRET_KEY || STRIPE_SECRET_KEY === 'sk_test_placeholder') {
+      // Return placeholder response for development
+      return c.json({
+        success: true,
+        checkout_url: '/account?payment_simulated=true',
+        session_id: 'sim_' + Date.now(),
+        message: 'Stripe not configured - simulated payment flow',
+        plan: {
+          name: plan.name,
+          price: plan.price_cents / 100,
+          minutes: plan.minutes_included
+        }
+      })
+    }
+    
+    // TODO: Real Stripe integration
+    // const stripe = new Stripe(STRIPE_SECRET_KEY)
+    // const session = await stripe.checkout.sessions.create({
+    //   customer_email: user.email,
+    //   line_items: [{
+    //     price: plan.stripe_price_id,
+    //     quantity: 1
+    //   }],
+    //   mode: plan.billing_cycle === 'one-time' ? 'payment' : 'subscription',
+    //   success_url: success_url || 'https://yourapp.pages.dev/account?success=true',
+    //   cancel_url: cancel_url || 'https://yourapp.pages.dev/pricing?canceled=true',
+    //   metadata: {
+    //     user_id: userId,
+    //     plan_id: plan_id
+    //   }
+    // })
+    
+    return c.json({
+      success: true,
+      message: 'Stripe integration pending - add real Stripe keys to enable payments',
+      plan: {
+        name: plan.name,
+        price: plan.price_cents / 100,
+        minutes: plan.minutes_included
+      }
+    })
+  } catch (error: any) {
+    console.error('Create checkout error:', error)
+    return c.json({ 
+      error: 'Failed to create checkout session',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// Create Stripe Customer Portal session (placeholder implementation)
+app.post('/api/checkout/portal', authMiddleware, async (c) => {
+  try {
+    const { STRIPE_SECRET_KEY } = c.env
+    const userId = c.get('userId')
+    const { return_url } = await c.req.json()
+    
+    // Check if Stripe is configured
+    if (!STRIPE_SECRET_KEY || STRIPE_SECRET_KEY === 'sk_test_placeholder') {
+      return c.json({
+        success: true,
+        portal_url: '/account',
+        message: 'Stripe not configured - redirecting to account page'
+      })
+    }
+    
+    // TODO: Real Stripe Customer Portal
+    // const stripe = new Stripe(STRIPE_SECRET_KEY)
+    // const session = await stripe.billingPortal.sessions.create({
+    //   customer: user.stripe_customer_id,
+    //   return_url: return_url || 'https://yourapp.pages.dev/account'
+    // })
+    
+    return c.json({
+      success: true,
+      message: 'Stripe Customer Portal integration pending',
+      portal_url: '/account'
+    })
+  } catch (error: any) {
+    console.error('Create portal error:', error)
+    return c.json({ 
+      error: 'Failed to create portal session',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// Stripe webhook handler (placeholder implementation)
+app.post('/api/webhooks/stripe', async (c) => {
+  try {
+    const { DB, STRIPE_WEBHOOK_SECRET } = c.env
+    const signature = c.req.header('stripe-signature')
+    const body = await c.req.text()
+    
+    // Check if Stripe is configured
+    if (!STRIPE_WEBHOOK_SECRET || STRIPE_WEBHOOK_SECRET === 'whsec_placeholder') {
+      console.log('Stripe webhook received but not configured - ignoring')
+      return c.json({ received: true, message: 'Webhook not configured' })
+    }
+    
+    // TODO: Real Stripe webhook verification
+    // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+    // const event = stripe.webhooks.constructEvent(body, signature!, STRIPE_WEBHOOK_SECRET)
+    //
+    // Handle events:
+    // - checkout.session.completed: Activate subscription
+    // - invoice.payment_succeeded: Renew credits
+    // - customer.subscription.updated: Update status
+    // - customer.subscription.deleted: Cancel subscription
+    
+    console.log('Stripe webhook placeholder - event would be processed here')
+    
+    return c.json({ received: true })
+  } catch (error: any) {
+    console.error('Webhook error:', error)
+    return c.json({ 
+      error: 'Webhook processing failed',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// ============================================================================
+// SCENARIO API ENDPOINTS
+// ============================================================================
 
 // Serve scenario JSON files - import directly for reliability
 import scenariosIndex from '../public/scenarios/index.json'
