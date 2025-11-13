@@ -25,18 +25,33 @@ app.post('/api/ephemeral', async (c) => {
       return c.json({ error: 'OpenAI API key not configured' }, 500)
     }
 
-    const openai = new OpenAI({ apiKey: OPENAI_API_KEY })
-    
-    // Create ephemeral session token (60 seconds validity)
-    const response = await openai.sessions.create({
-      model: 'gpt-4o-realtime-preview-2024-12-17',
-      voice: 'verse',
-      // Optional: Add modalities, instructions, etc.
+    // Use direct fetch to OpenAI API for ephemeral token
+    const response = await fetch('https://api.openai.com/v1/realtime/sessions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-realtime-preview-2024-12-17',
+        voice: 'verse'
+      })
     })
 
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('OpenAI API error:', errorText)
+      return c.json({ 
+        error: 'Failed to create session token',
+        details: `OpenAI API returned ${response.status}: ${errorText}`
+      }, 500)
+    }
+
+    const data = await response.json()
+    
     return c.json({
-      client_secret: response.client_secret.value,
-      expires_at: response.client_secret.expires_at
+      client_secret: data.client_secret.value,
+      expires_at: data.client_secret.expires_at
     })
   } catch (error: any) {
     console.error('Error creating ephemeral token:', error)
