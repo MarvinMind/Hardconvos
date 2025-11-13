@@ -87,19 +87,176 @@ A browser-based application where professionals practice difficult conversations
    - Environment variable setup (.dev.vars)
    - Git version control
 
+6. **Authentication System (Phase 2)** ✅
+   - User registration with email/password
+   - JWT-based session management (7-day expiry)
+   - Password hashing with bcryptjs
+   - Protected API routes with middleware
+   - Free tier auto-provisioning on signup
+
+7. **Usage Tracking System (Phase 3)** ✅
+   - Real-time conversation session tracking
+   - Credit balance management (seconds-based)
+   - Atomic credit deduction to prevent race conditions
+   - Free tier: 2 minutes/month with 90-second hard cutoff
+   - Grace period for monthly plans (2 minutes at 90% usage)
+   - Session history and analytics
+
+8. **Freemium Monetization Backend (Phase 4 - Placeholder)** ✅
+   - 8 pricing tiers configured in database
+   - Stripe checkout API (placeholder ready)
+   - Subscription management endpoints
+   - Webhook handler for payment events (structure ready)
+   - Customer Portal integration (placeholder)
+
 ### 🔄 In Progress
 
-- Turn tagging with structured outputs for analytics
-- Enhanced error handling and reconnection logic
-- Difficulty escalation tracking
+- **Frontend UI for Authentication (Phase 5)**
+  - Login/Register pages
+  - Pricing page with beautiful tier display
+  - Account dashboard with usage stats
+  - Timer display during conversations
+  - Upgrade modal when credits exhausted
 
-### 📋 Roadmap (Future Enhancements)
+### 📋 Roadmap (Next Steps)
 
-1. **Multiple Scenarios** - Build library of different client personas
-2. **Session History** - Store transcripts in Cloudflare D1
-3. **Progress Tracking** - Track improvement over multiple sessions
-4. **Digital Avatar Integration** - Connect to Heygen for Zoom/Teams meetings
-5. **Advanced Analytics** - Detailed turn-by-turn performance metrics
+1. **Complete Monetization Frontend** - Build login, pricing, and account pages
+2. **Real Stripe Integration** - Replace placeholders with live Stripe API
+3. **Setup Wizard Improvements** - Add dynamic scenario builder with temper meter
+4. **Multiple Scenarios** - Expand library beyond COO client escalation
+5. **Session History** - Full transcript storage and review
+6. **Digital Avatar Integration** - Connect to Heygen for Zoom/Teams meetings
+7. **Advanced Analytics** - Detailed turn-by-turn performance metrics
+
+---
+
+## 💰 Monetization System
+
+PAWS implements a complete freemium model to control costs at scale:
+
+### Pricing Tiers (8 Plans)
+
+#### Free Tier
+- **Price**: $0/month
+- **Minutes**: 2 minutes per month
+- **Features**: 
+  - Email/password authentication
+  - Hard cutoff at 1:30 (90 seconds) with finish-sentence grace
+  - Perfect for trying the platform
+
+#### Pay-Per-Use
+- **Price**: $1.99 per purchase
+- **Minutes**: 10 minutes reusable credit pool
+- **Features**:
+  - Credits persist across sessions until depleted
+  - Auto-pause when exhausted
+  - Can buy multiple times to continue
+  - No expiration
+
+#### Monthly Subscriptions
+- **Starter**: $9.99/month → 60 minutes (no rollover)
+- **Professional**: $14.99/month → 120 minutes (no rollover)
+- **Expert**: $29.99/month → 300 minutes (no rollover)
+- **Features**:
+  - Warning at 90% usage
+  - 2 free grace minutes with countdown timer
+  - Hard cutoff after grace period
+  - Can purchase pay-per-use as addon
+
+#### Annual Subscriptions (17% Discount)
+- **Starter Annual**: $99.90/year (save $19.98)
+- **Professional Annual**: $149.90/year (save $29.98)
+- **Expert Annual**: $299.90/year (save $59.88)
+- **Features**:
+  - Same as monthly, but billed annually
+  - Minutes refresh every 30 days
+  - Overage charged at $1.59/conversation (20% discount)
+
+### Credit System
+
+- **Tracking**: Seconds-based balance (not minutes)
+- **Atomic Updates**: Race condition prevention on deduction
+- **Grace Periods**: 
+  - Free tier: Hard cutoff at 90 seconds
+  - Monthly/Annual: 2-minute grace at 90% usage
+- **Expiration**: Credits expire at period end (except pay-per-use)
+- **Overage Handling**: Auto-pause with upgrade prompt
+
+### Database Schema
+
+#### Users Table
+```sql
+- id (UUID) - Primary key
+- email (UNIQUE) - Authentication identifier
+- password_hash - Bcrypt with cost factor 10
+- name - Optional display name
+- created_at (Unix timestamp)
+- email_verified (boolean)
+- status (active/suspended)
+```
+
+#### Subscription Plans (8 predefined)
+```sql
+- id - Plan identifier (free, payperuse, starter_monthly, etc.)
+- name - Display name
+- type - free/payperuse/monthly/annual
+- price_cents - Amount in cents
+- minutes_included - Time allocation
+- billing_cycle - monthly/annual/one_time
+- stripe_price_id - Stripe Price ID (when configured)
+```
+
+#### User Subscriptions
+```sql
+- id (UUID)
+- user_id → users.id
+- plan_id → subscription_plans.id
+- stripe_subscription_id - Stripe Subscription ID
+- status - active/canceled/past_due
+- current_period_start/end (Unix timestamp)
+```
+
+#### Credit Balances
+```sql
+- id (UUID)
+- user_id → users.id
+- balance_seconds - Remaining time in seconds
+- original_balance_seconds - Initial allocation
+- period_end - Expiration timestamp
+- type - free/payperuse/monthly/annual/grace
+```
+
+#### Usage Logs
+```sql
+- id (UUID)
+- user_id → users.id
+- session_start (Unix timestamp)
+- duration_seconds - Conversation length
+- scenario_id - Which scenario was practiced
+- status - active/completed/interrupted
+```
+
+### Payment Integration (Stripe - Placeholder)
+
+**Current Status**: Backend ready with placeholder responses
+
+**To Enable Real Payments**:
+1. Create Stripe account at https://stripe.com
+2. Get API keys (test + production)
+3. Create Price IDs for all 8 plans in Stripe Dashboard
+4. Add to wrangler.jsonc secrets:
+   ```bash
+   npx wrangler pages secret put STRIPE_SECRET_KEY --project-name paws
+   npx wrangler pages secret put STRIPE_WEBHOOK_SECRET --project-name paws
+   ```
+5. Update `stripe_price_id` in database for each plan
+6. Deploy updated code
+
+**Webhook Events to Handle**:
+- `checkout.session.completed` - Activate subscription
+- `invoice.payment_succeeded` - Renew monthly credits
+- `customer.subscription.updated` - Update status
+- `customer.subscription.deleted` - Cancel subscription
 
 ---
 
@@ -131,12 +288,41 @@ A browser-based application where professionals practice difficult conversations
 
 ### API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Main application UI |
-| `/api/ephemeral` | POST | Generate OpenAI ephemeral token (60s validity) |
-| `/api/debrief` | POST | Generate post-call coaching feedback |
-| `/scenario.json` | GET | Load current scenario configuration |
+#### Authentication (Phase 2)
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/auth/register` | POST | None | Create new account + free tier (2 min/month) |
+| `/api/auth/login` | POST | None | Authenticate and receive JWT cookie |
+| `/api/auth/logout` | POST | None | Clear authentication cookie |
+| `/api/auth/me` | GET | Required | Get current user profile + credits |
+
+#### Usage Tracking (Phase 3)
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/usage/start` | POST | Required | Begin conversation session |
+| `/api/usage/heartbeat` | POST | Required | Update duration + check credits |
+| `/api/usage/end` | POST | Required | End session + deduct credits |
+| `/api/usage/balance` | GET | Required | Get remaining time balance |
+| `/api/usage/history` | GET | Required | Get past conversation sessions |
+
+#### Subscriptions & Payment (Phase 4 - Placeholders)
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/subscriptions/plans` | GET | None | List all 8 pricing tiers |
+| `/api/subscriptions/current` | GET | Required | Get user's active subscription |
+| `/api/checkout/create-session` | POST | Required | Create Stripe checkout (placeholder) |
+| `/api/checkout/portal` | POST | Required | Access Customer Portal (placeholder) |
+| `/api/webhooks/stripe` | POST | None | Handle Stripe payment events (placeholder) |
+
+#### OpenAI & Scenarios
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/ephemeral` | POST | Required* | Generate OpenAI ephemeral token (60s) |
+| `/api/debrief` | POST | Required* | Generate coaching feedback |
+| `/api/scenario/generate` | POST | None | Build dynamic scenario prompt |
+| `/scenarios/*.json` | GET | None | Load scenario configuration files |
+
+*Note: Will require authentication after frontend Phase 5 is complete
 
 ---
 
