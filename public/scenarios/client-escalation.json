@@ -9,7 +9,7 @@
   "persona": {
     "role": "COO of Client Company",
     "base_style": "Direct, data-focused, low tolerance for excuses, results-driven executive",
-    "default_voice": "nova",
+    "default_voice": "coral",
     "suggested_demographics": {
       "gender": "female",
       "age": "middle-aged"

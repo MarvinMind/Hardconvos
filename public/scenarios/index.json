@@ -38,22 +38,28 @@
       "description": "Authoritative, senior male executive - good for bosses",
       "sample_url": null
     },
-    "fable": {
+    "ash": {
       "gender": "male",
       "age": "30s",
-      "description": "Younger male, friendly yet professional - good for peers",
+      "description": "Younger male, confident and professional - good for peers",
       "sample_url": null
     },
-    "onyx": {
+    "ballad": {
       "gender": "male",
       "age": "50s-60s",
       "description": "Deep, serious, senior executive - good for C-suite",
       "sample_url": null
     },
-    "nova": {
+    "coral": {
       "gender": "female",
       "age": "40s-50s",
       "description": "Warm yet firm professional female - excellent for senior female bosses",
+      "sample_url": null
+    },
+    "sage": {
+      "gender": "female",
+      "age": "50s-60s",
+      "description": "Mature, authoritative female - excellent for senior executives",
       "sample_url": null
     },
     "shimmer": {

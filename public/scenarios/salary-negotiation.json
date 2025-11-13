@@ -9,7 +9,7 @@
   "persona": {
     "role": "Your Direct Manager/Boss",
     "base_style": "Professional, evaluative, focused on performance and budget constraints",
-    "default_voice": "nova",
+    "default_voice": "coral",
     "suggested_demographics": {
       "gender": "female",
       "age": "middle-aged"

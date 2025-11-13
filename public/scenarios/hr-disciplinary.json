@@ -9,7 +9,7 @@
   "persona": {
     "role": "Employee Facing Discipline",
     "base_style": "Defensive, emotional, may deny or deflect responsibility",
-    "default_voice": "fable",
+    "default_voice": "ash",
     "suggested_demographics": {
       "gender": "male",
       "age": "young"

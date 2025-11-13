@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { serveStatic } from 'hono/cloudflare-workers'
 import OpenAI from 'openai'
 
 type Bindings = {
@@ -120,9 +119,6 @@ const app = new Hono<{ Bindings: Bindings }>()
 
 // Enable CORS for all routes
 app.use('*', cors())
-
-// Serve static files
-app.get('/static/*', serveStatic())
 
 // Serve scenario JSON files - import directly for reliability
 import scenariosIndex from '../public/scenarios/index.json'
