@@ -122,9 +122,20 @@ const app = new Hono<{ Bindings: Bindings }>()
 app.use('*', cors())
 
 // Serve static files
-app.use('/static/*', serveStatic({ root: './public' }))
-app.use('/scenarios/*', serveStatic({ root: './public' }))
-app.use('/scenario.json', serveStatic({ root: './public' }))
+app.get('/static/*', serveStatic())
+
+// Serve scenario JSON files - import directly for reliability
+import scenariosIndex from '../public/scenarios/index.json'
+import salaryNegotiation from '../public/scenarios/salary-negotiation.json'
+import hrDisciplinary from '../public/scenarios/hr-disciplinary.json'
+import salesGatekeeper from '../public/scenarios/sales-gatekeeper.json'
+import clientEscalation from '../public/scenarios/client-escalation.json'
+
+app.get('/scenarios/index.json', (c) => c.json(scenariosIndex))
+app.get('/scenarios/salary-negotiation.json', (c) => c.json(salaryNegotiation))
+app.get('/scenarios/hr-disciplinary.json', (c) => c.json(hrDisciplinary))
+app.get('/scenarios/sales-gatekeeper.json', (c) => c.json(salesGatekeeper))
+app.get('/scenarios/client-escalation.json', (c) => c.json(clientEscalation))
 
 // API: Generate dynamic scenario based on user configuration
 app.post('/api/scenario/generate', async (c) => {
