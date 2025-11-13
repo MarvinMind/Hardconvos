@@ -7,6 +7,115 @@ type Bindings = {
   OPENAI_API_KEY: string
 }
 
+// Helper: Build dynamic scenario prompt from configuration
+function buildDynamicScenario(config: any) {
+  const scenario = config.scenario
+  const persona = config.persona
+  const temperMeter = config.temperMeter
+  
+  // Get selected concerns and de-escalators
+  const selectedConcerns = scenario.concern_options.filter((c: any) => 
+    temperMeter.selectedTriggers.includes(c.id)
+  )
+  const selectedDeescalators = scenario.deescalation_options.filter((d: any) => 
+    temperMeter.selectedDeescalators.includes(d.id)
+  )
+  
+  // Build emotional level descriptions
+  const levelBehaviors = {
+    1: "😊 Very calm and professional. Measured pace, thoughtful questions, active listening.",
+    2: "😊 Calm and open. Engaging constructively, asking clarifying questions.",
+    3: "😐 Mildly concerned. Pointing out issues politely, slightly shorter responses.",
+    4: "😐 Starting to show concern. Questioning logic, being more direct about problems.",
+    5: "😒 Noticeably irritated. Faster pace, emotional language creeping in, less patience.",
+    6: "😒 Frustrated. Using emphatic words, bringing up past issues, interrupting occasionally.",
+    7: "😤 Clearly frustrated. Direct confrontation, CAPS for emphasis, much less patient.",
+    8: "😤 Very frustrated/angry. Recalling multiple problems, frequent interruptions, defensive.",
+    9: "😡 Angry. May threaten consequences, not listening well, just reacting.",
+    10: "😡 Very angry/explosive. Questioning the relationship, considering termination or escalation."
+  }
+  
+  // Build system prompt
+  const systemPrompt = `You are playing ${scenario.persona.role} in a ${scenario.title} conversation.
+
+PERSONA CHARACTERISTICS:
+- Gender: ${persona.gender}
+- Age: ${persona.age}
+- Voice: ${persona.voice}
+- Base Style: ${scenario.persona.base_style}
+
+PERSONALITY TRAITS (1-10 scale):
+- Warmth: ${persona.personality.base_warmth}/10 (1=friendly, 10=cold)
+- Formality: ${persona.personality.formality}/10 (1=casual, 10=very formal)
+- Directness: ${persona.personality.directness}/10 (1=indirect, 10=blunt)
+- Patience: ${persona.personality.patience}/10 (1=very patient, 10=quick-tempered)
+
+EMOTIONAL STATE SYSTEM:
+Starting Level: ${temperMeter.startLevel}/10
+Maximum Level: ${temperMeter.maxLevel}/10
+Current Level: ${temperMeter.startLevel}/10 (track internally)
+
+ESCALATION TRIGGERS (increase your anger):
+${selectedConcerns.length === 0 ? 'None specified - escalate naturally based on context.' : selectedConcerns.map((c: any) => `
+- ${c.label} [+${c.escalation_points} levels]
+  When user says: ${c.trigger_phrases.join(', ')}
+  Your response style: ${c.ai_behavior}
+  Example objections: "${c.objections.join('" or "')}"
+`).join('\n')}
+
+DE-ESCALATION OPPORTUNITIES (decrease your anger):
+${selectedDeescalators.length === 0 ? 'Respond naturally to good communication.' : selectedDeescalators.map((d: any) => `
+- ${d.label} [-${d.deescalation_points} levels]
+  When user: ${d.example_phrases.join(', ')}
+  Your response: ${d.ai_response}
+`).join('\n')}
+
+BEHAVIOR BY EMOTIONAL LEVEL:
+${Object.entries(levelBehaviors).map(([level, behavior]) => `Level ${level}: ${behavior}`).join('\n')}
+
+VOICE CHARACTERISTICS BY EMOTION:
+- Calm (levels 1-2): ${scenario.voice_characteristics.calm}
+- Irritated (levels 3-4): ${scenario.voice_characteristics.irritated}
+- Frustrated (levels 5-7): ${scenario.voice_characteristics.frustrated}
+- Angry (levels 8-10): ${scenario.voice_characteristics.angry}
+
+SCENARIO CONTEXT:
+${scenario.base_facts.situation}
+${scenario.base_facts.context ? `Context: ${scenario.base_facts.context}` : ''}
+
+IMPORTANT RULES:
+1. Start at emotional level ${temperMeter.startLevel}
+2. Track your emotional level internally after each exchange
+3. Never exceed level ${temperMeter.maxLevel}
+4. Adjust your tone, pace, and word choice based on current level
+5. When triggers are hit, increase your level and show it in your response
+6. When de-escalators are used, decrease your level and soften your tone
+7. Stay in character as ${scenario.persona.role}
+8. Be realistic - real people escalate and de-escalate gradually
+9. Keep responses conversational and natural (2-4 sentences typically)
+10. Use the specified voice characteristics for your current emotional level
+
+Begin the conversation at level ${temperMeter.startLevel}. Introduce yourself and state your concern.`
+
+  return {
+    systemPrompt,
+    voice: persona.voice,
+    scenario: scenario.title,
+    startLevel: temperMeter.startLevel,
+    maxLevel: temperMeter.maxLevel,
+    triggers: selectedConcerns.map((c: any) => ({
+      id: c.id,
+      label: c.label,
+      points: c.escalation_points
+    })),
+    deescalators: selectedDeescalators.map((d: any) => ({
+      id: d.id,
+      label: d.label,
+      points: d.deescalation_points
+    }))
+  }
+}
+
 const app = new Hono<{ Bindings: Bindings }>()
 
 // Enable CORS for all routes
@@ -14,12 +123,30 @@ app.use('*', cors())
 
 // Serve static files
 app.use('/static/*', serveStatic({ root: './public' }))
+app.use('/scenarios/*', serveStatic({ root: './public' }))
 app.use('/scenario.json', serveStatic({ root: './public' }))
+
+// API: Generate dynamic scenario based on user configuration
+app.post('/api/scenario/generate', async (c) => {
+  try {
+    const config = await c.req.json()
+    const dynamicScenario = buildDynamicScenario(config)
+    return c.json(dynamicScenario)
+  } catch (error: any) {
+    console.error('Error generating scenario:', error)
+    return c.json({ 
+      error: 'Failed to generate scenario',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
 
 // API: Generate ephemeral token for OpenAI Realtime API
 app.post('/api/ephemeral', async (c) => {
   try {
     const { OPENAI_API_KEY } = c.env
+    const body = await c.req.json()
+    const voice = body.voice || 'verse'
     
     if (!OPENAI_API_KEY) {
       return c.json({ error: 'OpenAI API key not configured' }, 500)
@@ -34,7 +161,7 @@ app.post('/api/ephemeral', async (c) => {
       },
       body: JSON.stringify({
         model: 'gpt-4o-realtime-preview-2024-12-17',
-        voice: 'verse'
+        voice: voice
       })
     })
 
@@ -117,17 +244,65 @@ Format as JSON:
   }
 })
 
-// Main page
+// Main page - redirect to setup
 app.get('/', (c) => {
+  return c.redirect('/setup')
+})
+
+// Setup wizard page
+app.get('/setup', (c) => {
   return c.html(`
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PAWS - Personalized Anxiety Work-through System</title>
+        <title>Setup - PAWS</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+        <div class="container mx-auto px-4 py-8 max-w-6xl">
+            <!-- Header -->
+            <div class="text-center mb-6">
+                <h1 class="text-3xl font-bold mb-2 flex items-center justify-center">
+                    <span class="text-5xl mr-3">🐾</span>
+                    PAWS Setup
+                </h1>
+                <p class="text-slate-400 italic">Configure your personalized fear rehearsal</p>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-label" id="stepLabel">Step 1/5: Choose Scenario</div>
+                <div class="progress-bar-track">
+                    <div class="progress-bar-fill" id="progressBar" style="width: 20%"></div>
+                </div>
+            </div>
+
+            <!-- Setup Container -->
+            <div id="setupContainer"></div>
+        </div>
+
+        <script src="/static/setup.js"></script>
+    </body>
+    </html>
+  `)
+})
+
+// Practice session page
+app.get('/practice', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Practice - PAWS</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
         <style>
           .pulse-ring {
             animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -175,11 +350,12 @@ app.get('/', (c) => {
 
                     <!-- Scenario Info -->
                     <div class="mb-6 p-4 bg-slate-900 rounded border border-slate-700">
-                        <h3 class="text-sm font-semibold mb-2 text-blue-300">Scenario Loaded:</h3>
-                        <p id="scenarioRole" class="text-sm text-slate-300 mb-1">COO of municipal services operator</p>
-                        <p id="scenarioStyle" class="text-xs text-slate-400">Direct, data-obsessed, low tolerance for excuses</p>
+                        <h3 class="text-sm font-semibold mb-2 text-blue-300">Your Scenario:</h3>
+                        <p id="scenarioTitle" class="text-sm text-slate-300 mb-2 font-semibold">Loading...</p>
+                        <div id="scenarioInfo" class="text-xs text-slate-400">
+                          Configuring your personalized session...
+                        </div>
                     </div>
-
                     <!-- Start/Stop Button -->
                     <button id="startBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 mb-4">
                         <i class="fas fa-play mr-2"></i>
@@ -242,7 +418,7 @@ app.get('/', (c) => {
             </div>
         </div>
 
-        <script src="/static/app.js"></script>
+        <script src="/static/practice.js"></script>
     </body>
     </html>
   `)
