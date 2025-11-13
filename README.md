@@ -1,14 +1,14 @@
-# Artificial Client - Voice Practice MVP
+# 🐾 PAWS - Personalized Anxiety Work-through System
 
-> **Practice handling difficult client conversations with AI-powered voice simulation**
+> **"Take a PAWS before that hard conversation"**
 
-A browser-based application where consultants and salespeople can practice tough conversations with a realistic AI "client" that pushes back, interrupts naturally, and provides coaching feedback.
+A browser-based application where professionals practice difficult conversations with AI-powered voice simulation. PAWS uses OpenAI's Realtime API to help you rehearse tough conversations with personalized fear scenarios, adjustable difficulty levels, and coaching feedback.
 
 ---
 
 ## 🎯 Project Overview
 
-**Artificial Client** is a training tool that simulates difficult client conversations using OpenAI's Realtime API for natural, duplex voice interaction. Users speak with an AI-powered client who challenges them on late projects, missed milestones, and payment issues - then receive personalized coaching feedback.
+**PAWS (Personalized Anxiety Work-through System)** is a training tool that simulates difficult conversations using OpenAI's Realtime API for natural, duplex voice interaction. Users speak with an AI-powered persona who challenges them based on their specific fears and concerns - then receive personalized coaching feedback.
 
 ### Key Features
 
@@ -205,25 +205,13 @@ A browser-based application where consultants and salespeople can practice tough
 
 ### First-Time Setup
 
-1. **Authenticate with Cloudflare**
+1. **Set OpenAI API key as secret** ⚠️ **REQUIRED NEXT STEP**
    ```bash
-   npx wrangler login
-   ```
-
-2. **Create Cloudflare Pages project**
-   ```bash
-   npx wrangler pages project create artificial-client \
-     --production-branch main \
-     --compatibility-date 2024-01-01
-   ```
-
-3. **Set OpenAI API key as secret**
-   ```bash
-   npx wrangler pages secret put OPENAI_API_KEY --project-name artificial-client
+   npx wrangler pages secret put OPENAI_API_KEY --project-name paws
    # Enter your OpenAI API key when prompted
    ```
 
-4. **Deploy**
+2. **Deploy updates**
    ```bash
    npm run deploy:prod
    ```
@@ -232,12 +220,12 @@ A browser-based application where consultants and salespeople can practice tough
 
 ```bash
 npm run build
-npx wrangler pages deploy dist --project-name artificial-client
+npx wrangler pages deploy dist --project-name paws
 ```
 
-Your app will be available at:
-- Production: `https://artificial-client.pages.dev`
-- Branch: `https://main.artificial-client.pages.dev`
+Your app is available at:
+- Production: `https://paws-cai.pages.dev`
+- Latest: `https://49ebb0bf.paws-cai.pages.dev`
 
 ---
 
@@ -381,10 +369,11 @@ This is an MVP prototype. For the next phase:
 
 ## 📊 Current URLs
 
-- **Sandbox**: https://3000-i6fuzzpcp20oqdsz3wonr-c81df28e.sandbox.novita.ai
-- **Production**: (Deploy with `npm run deploy:prod`)
+- **Production**: https://paws-cai.pages.dev
+- **Latest Deployment**: https://49ebb0bf.paws-cai.pages.dev
+- **GitHub**: https://github.com/Alfredlechat/Hardconvos.git
 
 ---
 
 **Last Updated**: 2025-11-13  
-**Status**: ✅ MVP Complete - Ready for testing with OpenAI API key
+**Status**: ✅ Deployed to Cloudflare Pages - **⚠️ Awaiting OpenAI API key configuration**
