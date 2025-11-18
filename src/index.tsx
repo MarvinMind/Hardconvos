@@ -578,6 +578,156 @@ app.get('/api/usage/history', authMiddleware, async (c) => {
 })
 
 // ============================================================================
+// ADMIN API ENDPOINTS
+// ============================================================================
+
+// Get admin statistics
+app.get('/api/admin/stats', authMiddleware, async (c) => {
+  try {
+    const { DB } = c.env
+    
+    // Get total users
+    const totalUsersResult = await DB.prepare(`
+      SELECT COUNT(*) as count FROM users
+    `).first()
+    const totalUsers = totalUsersResult?.count || 0
+    
+    // Get user distribution by plan
+    const planDistResult = await DB.prepare(`
+      SELECT 
+        sp.id as plan_id,
+        sp.name as plan_name,
+        sp.type,
+        COUNT(us.id) as count
+      FROM subscription_plans sp
+      LEFT JOIN user_subscriptions us ON sp.id = us.plan_id AND us.status = 'active'
+      GROUP BY sp.id, sp.name, sp.type
+      ORDER BY sp.price_cents
+    `).all()
+    
+    const planDistribution = planDistResult.results.map((row: any) => ({
+      plan_id: row.plan_id,
+      plan_name: row.plan_name,
+      type: row.type,
+      count: row.count,
+      percentage: totalUsers > 0 ? (row.count / totalUsers) * 100 : 0
+    }))
+    
+    // Calculate revenue (simplified - assumes all subscriptions are active)
+    const revenueResult = await DB.prepare(`
+      SELECT 
+        SUM(sp.price_cents) as total_cents
+      FROM user_subscriptions us
+      JOIN subscription_plans sp ON us.plan_id = sp.id
+      WHERE us.status = 'active' AND sp.type != 'free'
+    `).first()
+    const totalRevenue = (revenueResult?.total_cents || 0) / 100
+    
+    // Calculate total usage (in minutes)
+    const usageResult = await DB.prepare(`
+      SELECT 
+        SUM(duration_seconds) as total_seconds,
+        AVG(duration_seconds) as avg_seconds,
+        COUNT(*) as session_count
+      FROM usage_logs
+      WHERE status = 'completed'
+    `).first()
+    
+    const totalSeconds = usageResult?.total_seconds || 0
+    const totalMinutes = totalSeconds / 60
+    const avgDuration = (usageResult?.avg_seconds || 0) / 60
+    const sessionCount = usageResult?.session_count || 0
+    
+    // Calculate costs
+    // Free tier: $0.01/min (GPT-4o-mini)
+    // Paid tier: $0.30/min (OpenAI Realtime)
+    const freeUsageResult = await DB.prepare(`
+      SELECT SUM(ul.duration_seconds) as total_seconds
+      FROM usage_logs ul
+      JOIN user_subscriptions us ON ul.user_id = us.user_id
+      JOIN subscription_plans sp ON us.plan_id = sp.id
+      WHERE ul.status = 'completed' AND sp.type = 'free'
+    `).first()
+    
+    const freeSeconds = freeUsageResult?.total_seconds || 0
+    const freeMinutes = freeSeconds / 60
+    const freeCost = freeMinutes * 0.01
+    
+    const paidSeconds = totalSeconds - freeSeconds
+    const paidMinutes = paidSeconds / 60
+    const paidCost = paidMinutes * 0.30
+    
+    const totalCosts = freeCost + paidCost
+    const grossProfit = totalRevenue - totalCosts
+    const profitMargin = totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0
+    
+    // Calculate conversion rate
+    const freeUsers = planDistribution.find(p => p.type === 'free')?.count || 0
+    const paidUsers = totalUsers - freeUsers
+    const conversionRate = totalUsers > 0 ? (paidUsers / totalUsers) * 100 : 0
+    
+    // ARPU (Average Revenue Per User)
+    const arpu = totalUsers > 0 ? totalRevenue / totalUsers : 0
+    
+    // Revenue per minute (for paid users only)
+    const revenuePerMinute = paidMinutes > 0 ? totalRevenue / paidMinutes : 0
+    const marginPercent = revenuePerMinute > 0 ? ((revenuePerMinute - 0.30) / revenuePerMinute) * 100 : 0
+    
+    // Get recent sessions
+    const recentSessionsResult = await DB.prepare(`
+      SELECT 
+        ul.id,
+        ul.session_start,
+        ul.duration_seconds,
+        ul.scenario_id,
+        u.email as user_email,
+        sp.name as plan_name
+      FROM usage_logs ul
+      JOIN users u ON ul.user_id = u.id
+      LEFT JOIN user_subscriptions us ON ul.user_id = us.user_id
+      LEFT JOIN subscription_plans sp ON us.plan_id = sp.id
+      WHERE ul.status = 'completed'
+      ORDER BY ul.session_start DESC
+      LIMIT 10
+    `).all()
+    
+    const recentSessions = recentSessionsResult.results.map((row: any) => ({
+      id: row.id,
+      session_start: row.session_start,
+      duration_seconds: row.duration_seconds,
+      scenario_id: row.scenario_id,
+      user_email: row.user_email,
+      plan_name: row.plan_name || 'Free'
+    }))
+    
+    return c.json({
+      total_users: totalUsers,
+      total_revenue: totalRevenue,
+      total_costs: totalCosts,
+      gross_profit: grossProfit,
+      profit_margin: profitMargin,
+      conversion_rate: conversionRate,
+      arpu: arpu,
+      avg_session_duration: avgDuration,
+      revenue_per_minute: revenuePerMinute,
+      margin_percent: marginPercent,
+      plan_distribution: planDistribution,
+      recent_sessions: recentSessions,
+      session_count: sessionCount,
+      total_minutes: totalMinutes,
+      free_minutes: freeMinutes,
+      paid_minutes: paidMinutes
+    })
+  } catch (error: any) {
+    console.error('Admin stats error:', error)
+    return c.json({ 
+      error: 'Failed to get admin stats',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// ============================================================================
 // STRIPE PAYMENT API ENDPOINTS (with placeholder keys)
 // ============================================================================
 
@@ -1451,6 +1601,334 @@ app.get('/pricing', (c) => {
 
             // Load on page load
             loadPricing();
+        </script>
+    </body>
+    </html>
+  `)
+})
+
+// Admin dashboard page
+app.get('/admin', authMiddleware, (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin Dashboard - PAWS</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+        <!-- Header -->
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold">🐾 PAWS Admin</h1>
+                    <p class="text-slate-400 text-sm">Cost Analysis & Business Metrics</p>
+                </div>
+                <div class="space-x-4">
+                    <a href="/account" class="text-slate-300 hover:text-white">My Account</a>
+                    <a href="/pricing" class="text-slate-300 hover:text-white">Pricing</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <!-- Loading State -->
+            <div id="loadingState" class="text-center py-12">
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-400"></i>
+                <p class="mt-4 text-slate-400">Loading dashboard data...</p>
+            </div>
+
+            <!-- Main Content -->
+            <div id="mainContent" class="hidden space-y-6">
+                <!-- Key Metrics Grid -->
+                <div class="grid md:grid-cols-4 gap-6">
+                    <!-- Total Users -->
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <i class="fas fa-users text-3xl text-blue-400"></i>
+                            <span class="text-sm text-slate-400">Total</span>
+                        </div>
+                        <div id="totalUsers" class="text-3xl font-bold">-</div>
+                        <div class="text-sm text-slate-400 mt-1">Users</div>
+                    </div>
+
+                    <!-- Total Revenue -->
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <i class="fas fa-dollar-sign text-3xl text-green-400"></i>
+                            <span class="text-sm text-slate-400">Lifetime</span>
+                        </div>
+                        <div id="totalRevenue" class="text-3xl font-bold">-</div>
+                        <div class="text-sm text-slate-400 mt-1">Revenue</div>
+                    </div>
+
+                    <!-- Total Costs -->
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <i class="fas fa-coins text-3xl text-red-400"></i>
+                            <span class="text-sm text-slate-400">OpenAI</span>
+                        </div>
+                        <div id="totalCosts" class="text-3xl font-bold">-</div>
+                        <div class="text-sm text-slate-400 mt-1">Costs</div>
+                    </div>
+
+                    <!-- Gross Profit -->
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <i class="fas fa-chart-line text-3xl text-yellow-400"></i>
+                            <span class="text-sm text-slate-400">Margin</span>
+                        </div>
+                        <div id="grossProfit" class="text-3xl font-bold">-</div>
+                        <div id="profitMargin" class="text-sm text-slate-400 mt-1">-%</div>
+                    </div>
+                </div>
+
+                <!-- Conversion Metrics -->
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                        <h3 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-percent mr-2 text-blue-400"></i>
+                            Conversion Rate
+                        </h3>
+                        <div id="conversionRate" class="text-4xl font-bold text-blue-400">-%</div>
+                        <div class="text-sm text-slate-400 mt-2">Free → Paid conversion</div>
+                    </div>
+
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                        <h3 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-user-clock mr-2 text-green-400"></i>
+                            Avg Revenue Per User
+                        </h3>
+                        <div id="arpu" class="text-4xl font-bold text-green-400">$-</div>
+                        <div class="text-sm text-slate-400 mt-2">ARPU (all users)</div>
+                    </div>
+
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                        <h3 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-stopwatch mr-2 text-purple-400"></i>
+                            Avg Session Duration
+                        </h3>
+                        <div id="avgDuration" class="text-4xl font-bold text-purple-400">-</div>
+                        <div class="text-sm text-slate-400 mt-2">minutes per session</div>
+                    </div>
+                </div>
+
+                <!-- User Breakdown -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- User Distribution -->
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                        <h3 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-chart-pie mr-2 text-yellow-400"></i>
+                            User Distribution by Plan
+                        </h3>
+                        <div id="planDistribution" class="space-y-3">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                        <h3 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-clock mr-2 text-orange-400"></i>
+                            Recent Sessions
+                        </h3>
+                        <div id="recentSessions" class="space-y-2 max-h-64 overflow-y-auto">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cost Analysis -->
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <h2 class="text-xl font-bold mb-4">
+                        <i class="fas fa-calculator mr-2 text-red-400"></i>
+                        Cost Analysis & Recommendations
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-3 gap-6 mb-6">
+                        <div class="text-center p-4 bg-slate-900 rounded">
+                            <div class="text-sm text-slate-400 mb-1">Current Cost/Min</div>
+                            <div class="text-2xl font-bold text-red-400">$0.30</div>
+                            <div class="text-xs text-slate-500 mt-1">OpenAI Realtime API</div>
+                        </div>
+                        <div class="text-center p-4 bg-slate-900 rounded">
+                            <div class="text-sm text-slate-400 mb-1">Revenue/Min (Avg)</div>
+                            <div id="revenuePerMin" class="text-2xl font-bold text-green-400">$-</div>
+                            <div class="text-xs text-slate-500 mt-1">Across all paid users</div>
+                        </div>
+                        <div class="text-center p-4 bg-slate-900 rounded">
+                            <div class="text-sm text-slate-400 mb-1">Margin</div>
+                            <div id="marginPercent" class="text-2xl font-bold text-yellow-400">-%</div>
+                            <div class="text-xs text-slate-500 mt-1">Target: 70%+</div>
+                        </div>
+                    </div>
+
+                    <div id="recommendations" class="space-y-3">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            async function loadAdminDashboard() {
+                try {
+                    // Get all users (for admin, you'd normally check admin status)
+                    const usersResponse = await fetch('/api/admin/stats', {
+                        credentials: 'include'
+                    });
+
+                    if (!usersResponse.ok) {
+                        alert('Admin access required');
+                        window.location.href = '/account';
+                        return;
+                    }
+
+                    const stats = await usersResponse.json();
+                    
+                    // Show main content
+                    document.getElementById('loadingState').classList.add('hidden');
+                    document.getElementById('mainContent').classList.remove('hidden');
+                    
+                    // Populate key metrics
+                    document.getElementById('totalUsers').textContent = stats.total_users;
+                    document.getElementById('totalRevenue').textContent = '$' + stats.total_revenue.toFixed(2);
+                    document.getElementById('totalCosts').textContent = '$' + stats.total_costs.toFixed(2);
+                    document.getElementById('grossProfit').textContent = '$' + stats.gross_profit.toFixed(2);
+                    document.getElementById('profitMargin').textContent = stats.profit_margin.toFixed(1) + '%';
+                    
+                    // Conversion metrics
+                    document.getElementById('conversionRate').textContent = stats.conversion_rate.toFixed(1) + '%';
+                    document.getElementById('arpu').textContent = '$' + stats.arpu.toFixed(2);
+                    document.getElementById('avgDuration').textContent = stats.avg_session_duration.toFixed(1);
+                    
+                    // Cost analysis
+                    document.getElementById('revenuePerMin').textContent = '$' + stats.revenue_per_minute.toFixed(2);
+                    document.getElementById('marginPercent').textContent = stats.margin_percent.toFixed(1) + '%';
+                    
+                    // Plan distribution
+                    renderPlanDistribution(stats.plan_distribution);
+                    
+                    // Recent sessions
+                    renderRecentSessions(stats.recent_sessions);
+                    
+                    // Recommendations
+                    renderRecommendations(stats);
+                    
+                } catch (error) {
+                    console.error('Failed to load admin dashboard:', error);
+                    alert('Failed to load dashboard. Check console for errors.');
+                }
+            }
+            
+            function renderPlanDistribution(distribution) {
+                const container = document.getElementById('planDistribution');
+                const colors = {
+                    'free': 'bg-slate-600',
+                    'payperuse': 'bg-blue-600',
+                    'monthly': 'bg-green-600',
+                    'annual': 'bg-purple-600'
+                };
+                
+                container.innerHTML = distribution.map(item => \`
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 rounded-full \${colors[item.type] || 'bg-gray-600'} mr-2"></div>
+                            <span class="text-sm">\${item.plan_name}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-semibold">\${item.count} users</span>
+                            <span class="text-xs text-slate-400">(\${item.percentage.toFixed(1)}%)</span>
+                        </div>
+                    </div>
+                \`).join('');
+            }
+            
+            function renderRecentSessions(sessions) {
+                const container = document.getElementById('recentSessions');
+                
+                if (sessions.length === 0) {
+                    container.innerHTML = '<div class="text-sm text-slate-400 text-center py-4">No recent sessions</div>';
+                    return;
+                }
+                
+                container.innerHTML = sessions.map(session => \`
+                    <div class="text-xs bg-slate-900 rounded p-2 flex justify-between items-center">
+                        <div>
+                            <span class="text-slate-300">\${session.user_email || 'Anonymous'}</span>
+                            <span class="text-slate-500 ml-2">\${new Date(session.session_start * 1000).toLocaleString()}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-blue-400">\${Math.floor(session.duration_seconds / 60)}:\${(session.duration_seconds % 60).toString().padStart(2, '0')}</span>
+                            <span class="text-slate-500">·</span>
+                            <span class="text-green-400">\${session.plan_name || 'Free'}</span>
+                        </div>
+                    </div>
+                \`).join('');
+            }
+            
+            function renderRecommendations(stats) {
+                const container = document.getElementById('recommendations');
+                const recommendations = [];
+                
+                if (stats.margin_percent < 60) {
+                    recommendations.push({
+                        icon: 'fa-exclamation-triangle',
+                        color: 'red',
+                        title: 'Low Margin Alert',
+                        message: 'Profit margin below 60%. Consider increasing prices or reducing costs.'
+                    });
+                }
+                
+                if (stats.conversion_rate < 5) {
+                    recommendations.push({
+                        icon: 'fa-chart-line',
+                        color: 'yellow',
+                        title: 'Low Conversion',
+                        message: 'Conversion rate below 5%. Improve free tier experience or pricing messaging.'
+                    });
+                }
+                
+                if (stats.arpu < 10) {
+                    recommendations.push({
+                        icon: 'fa-dollar-sign',
+                        color: 'orange',
+                        title: 'Low ARPU',
+                        message: 'Average revenue per user is low. Focus on upselling to higher tiers.'
+                    });
+                }
+                
+                if (stats.margin_percent >= 70 && stats.conversion_rate >= 5) {
+                    recommendations.push({
+                        icon: 'fa-check-circle',
+                        color: 'green',
+                        title: 'Healthy Metrics',
+                        message: 'Unit economics look good! Focus on growth and marketing.'
+                    });
+                }
+                
+                if (recommendations.length === 0) {
+                    container.innerHTML = '<div class="text-sm text-slate-400">No recommendations at this time.</div>';
+                    return;
+                }
+                
+                container.innerHTML = recommendations.map(rec => \`
+                    <div class="flex items-start gap-3 p-3 bg-slate-900 rounded">
+                        <i class="fas \${rec.icon} text-\${rec.color}-400 text-xl mt-1"></i>
+                        <div>
+                            <div class="font-semibold text-\${rec.color}-400">\${rec.title}</div>
+                            <div class="text-sm text-slate-300 mt-1">\${rec.message}</div>
+                        </div>
+                    </div>
+                \`).join('');
+            }
+            
+            // Load on page load
+            loadAdminDashboard();
         </script>
     </body>
     </html>
