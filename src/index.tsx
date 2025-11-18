@@ -972,15 +972,62 @@ app.post('/api/scenario/generate', async (c) => {
   }
 })
 
-// API: Generate ephemeral token for OpenAI Realtime API
-app.post('/api/ephemeral', async (c) => {
+// API: Check user tier and determine AI model to use
+app.post('/api/session/start', authMiddleware, async (c) => {
   try {
-    const { OPENAI_API_KEY } = c.env
+    const { DB } = c.env
+    const user = c.get('user')
+    const body = await c.req.json()
+    const voice = body.voice || 'verse'
+    
+    // Get user subscription
+    const subscription = await db.getUserSubscription(DB, user.userId)
+    
+    if (!subscription) {
+      return c.json({ error: 'No active subscription found' }, 403)
+    }
+    
+    // Check if user has free tier
+    const isFree = subscription.plan_id === 'free'
+    
+    return c.json({
+      tier: isFree ? 'free' : 'paid',
+      model: isFree ? 'gpt-4o-mini' : 'realtime',
+      voice: voice,
+      subscription: {
+        plan_id: subscription.plan_id,
+        status: subscription.status
+      }
+    })
+  } catch (error: any) {
+    console.error('Error checking user tier:', error)
+    return c.json({ 
+      error: 'Failed to check user tier',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// API: Generate ephemeral token for OpenAI Realtime API (PAID TIER ONLY)
+app.post('/api/ephemeral', authMiddleware, async (c) => {
+  try {
+    const { DB, OPENAI_API_KEY } = c.env
+    const user = c.get('user')
     const body = await c.req.json()
     const voice = body.voice || 'verse'
     
     if (!OPENAI_API_KEY) {
       return c.json({ error: 'OpenAI API key not configured' }, 500)
+    }
+    
+    // Verify user has paid tier
+    const subscription = await db.getUserSubscription(DB, user.userId)
+    
+    if (!subscription || subscription.plan_id === 'free') {
+      return c.json({ 
+        error: 'Realtime API only available for paid tiers',
+        message: 'Please upgrade to access premium voice features'
+      }, 403)
     }
 
     // Use direct fetch to OpenAI API for ephemeral token
@@ -1009,12 +1056,73 @@ app.post('/api/ephemeral', async (c) => {
     
     return c.json({
       client_secret: data.client_secret.value,
-      expires_at: data.client_secret.expires_at
+      expires_at: data.client_secret.expires_at,
+      tier: 'paid',
+      model: 'realtime'
     })
   } catch (error: any) {
     console.error('Error creating ephemeral token:', error)
     return c.json({ 
       error: 'Failed to create session token',
+      details: error?.message || 'Unknown error'
+    }, 500)
+  }
+})
+
+// API: Free tier streaming endpoint using GPT-4o-mini + TTS
+app.post('/api/chat/stream', authMiddleware, async (c) => {
+  try {
+    const { DB, OPENAI_API_KEY } = c.env
+    const user = c.get('user')
+    const { messages, voice, systemPrompt } = await c.req.json()
+    
+    if (!OPENAI_API_KEY) {
+      return c.json({ error: 'OpenAI API key not configured' }, 500)
+    }
+    
+    // Verify user has free tier
+    const subscription = await db.getUserSubscription(DB, user.userId)
+    
+    if (!subscription) {
+      return c.json({ error: 'No active subscription found' }, 403)
+    }
+    
+    // Free tier: Use GPT-4o-mini for text generation
+    const openai = new OpenAI({ apiKey: OPENAI_API_KEY })
+    
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...messages
+      ],
+      temperature: 0.8,
+      max_tokens: 500
+    })
+    
+    const responseText = completion.choices[0].message.content
+    
+    // Generate speech using TTS
+    const ttsResponse = await openai.audio.speech.create({
+      model: 'tts-1',
+      voice: voice as any || 'alloy',
+      input: responseText || '',
+      speed: 1.0
+    })
+    
+    const audioBuffer = await ttsResponse.arrayBuffer()
+    const audioBase64 = btoa(String.fromCharCode(...new Uint8Array(audioBuffer)))
+    
+    return c.json({
+      text: responseText,
+      audio: audioBase64,
+      tier: 'free',
+      model: 'gpt-4o-mini'
+    })
+  } catch (error: any) {
+    console.error('Error in free tier chat:', error)
+    return c.json({ 
+      error: 'Failed to generate response',
       details: error?.message || 'Unknown error'
     }, 500)
   }
@@ -2259,7 +2367,19 @@ app.get('/setup', (c) => {
 })
 
 // Practice session page
-app.get('/practice', (c) => {
+app.get('/practice', authMiddleware, async (c) => {
+  const { DB } = c.env
+  const user = c.get('user')
+  
+  // Check user subscription tier
+  const subscription = await db.getUserSubscription(DB, user.userId)
+  const isFree = !subscription || subscription.plan_id === 'free'
+  
+  const practiceScript = isFree ? '/static/practice-free.js' : '/static/practice.js'
+  const tierBadge = isFree 
+    ? '<span class="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded text-blue-300 text-sm font-semibold">🆓 Free Tier</span>'
+    : '<span class="px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm font-semibold">⭐ Premium</span>'
+  
   return c.html(`
     <!DOCTYPE html>
     <html lang="en">
@@ -2293,6 +2413,9 @@ app.get('/practice', (c) => {
                 </h1>
                 <p class="text-slate-400 italic">Take a PAWS before that hard conversation</p>
                 <p class="text-slate-500 text-sm mt-1">Personalized Anxiety Work-through System</p>
+                <div class="mt-3">
+                  ${tierBadge}
+                </div>
             </div>
 
             <!-- Main Content -->
@@ -2352,6 +2475,13 @@ app.get('/practice', (c) => {
                     <button id="stopBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 hidden">
                         <i class="fas fa-stop mr-2"></i>
                         End Conversation
+                    </button>
+
+                    <!-- Push-to-Talk Button (Free Tier Only) -->
+                    <button id="pushToTalkBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-6 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 hidden disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-microphone text-blue-400 text-3xl"></i>
+                        <br>
+                        <span class="text-blue-300">Hold to Speak</span>
                     </button>
 
                     <!-- Recording Indicator -->
@@ -2658,7 +2788,7 @@ app.get('/practice', (c) => {
             });
         </script>
 
-        <script src="/static/practice.js"></script>
+        <script src="${practiceScript}"></script>
     </body>
     </html>
   `)
