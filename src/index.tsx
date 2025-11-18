@@ -1181,8 +1181,98 @@ app.get('/pricing', (c) => {
             </div>
 
             <!-- Feature Comparison -->
+            <div class="bg-slate-800 rounded-lg p-8 border border-slate-700 mb-8">
+                <h2 class="text-2xl font-bold mb-6 text-center">Free vs Premium Features</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-slate-700">
+                                <th class="py-3 px-4 text-slate-400 font-semibold">Feature</th>
+                                <th class="py-3 px-4 text-center">Free Tier</th>
+                                <th class="py-3 px-4 text-center">Paid Tiers</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-700">
+                                <td class="py-3 px-4">
+                                    <i class="fas fa-comments text-blue-400 mr-2"></i>
+                                    <strong>Real-Time Interruptions</strong>
+                                    <div class="text-xs text-slate-400 mt-1">Interrupt and be interrupted naturally</div>
+                                </td>
+                                <td class="py-3 px-4 text-center text-red-400"><i class="fas fa-times text-xl"></i></td>
+                                <td class="py-3 px-4 text-center text-green-400"><i class="fas fa-check text-xl"></i></td>
+                            </tr>
+                            <tr class="border-b border-slate-700">
+                                <td class="py-3 px-4">
+                                    <i class="fas fa-fire text-orange-400 mr-2"></i>
+                                    <strong>Angry Counterparties</strong>
+                                    <div class="text-xs text-slate-400 mt-1">Practice with escalating emotional intensity</div>
+                                </td>
+                                <td class="py-3 px-4 text-center text-red-400"><i class="fas fa-times text-xl"></i></td>
+                                <td class="py-3 px-4 text-center text-green-400"><i class="fas fa-check text-xl"></i></td>
+                            </tr>
+                            <tr class="border-b border-slate-700">
+                                <td class="py-3 px-4">
+                                    <i class="fas fa-brain text-purple-400 mr-2"></i>
+                                    <strong>Advanced Arguments</strong>
+                                    <div class="text-xs text-slate-400 mt-1">Sophisticated pushback and objections</div>
+                                </td>
+                                <td class="py-3 px-4 text-center text-red-400"><i class="fas fa-times text-xl"></i></td>
+                                <td class="py-3 px-4 text-center text-green-400"><i class="fas fa-check text-xl"></i></td>
+                            </tr>
+                            <tr class="border-b border-slate-700">
+                                <td class="py-3 px-4">
+                                    <i class="fas fa-bolt text-yellow-400 mr-2"></i>
+                                    <strong>Realistic Voice Dynamics</strong>
+                                    <div class="text-xs text-slate-400 mt-1">Natural pitch, tone, and emotion shifts</div>
+                                </td>
+                                <td class="py-3 px-4 text-center text-yellow-400">
+                                    <i class="fas fa-star-half-alt text-xl"></i>
+                                    <div class="text-xs mt-1">Basic</div>
+                                </td>
+                                <td class="py-3 px-4 text-center text-green-400">
+                                    <i class="fas fa-star text-xl"></i>
+                                    <div class="text-xs mt-1">Premium</div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-slate-700">
+                                <td class="py-3 px-4">
+                                    <i class="fas fa-clock text-blue-400 mr-2"></i>
+                                    <strong>Response Latency</strong>
+                                    <div class="text-xs text-slate-400 mt-1">Time between your speech and AI response</div>
+                                </td>
+                                <td class="py-3 px-4 text-center text-yellow-400">
+                                    1-2 seconds
+                                </td>
+                                <td class="py-3 px-4 text-center text-green-400">
+                                    <strong>&lt;100ms</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4">
+                                    <i class="fas fa-history text-slate-400 mr-2"></i>
+                                    <strong>Session History</strong>
+                                    <div class="text-xs text-slate-400 mt-1">Review past conversations and progress</div>
+                                </td>
+                                <td class="py-3 px-4 text-center text-red-400"><i class="fas fa-times text-xl"></i></td>
+                                <td class="py-3 px-4 text-center text-green-400"><i class="fas fa-check text-xl"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-6 p-4 bg-blue-900 bg-opacity-30 border border-blue-700 rounded-lg">
+                    <p class="text-sm text-blue-200">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <strong>Premium tiers use OpenAI's advanced Realtime API</strong> for the most realistic practice experience. 
+                        Free tier uses a text-based model to keep costs sustainable.
+                    </p>
+                </div>
+            </div>
+
+            <!-- What You Get -->
             <div class="bg-slate-800 rounded-lg p-8 border border-slate-700">
-                <h2 class="text-2xl font-bold mb-6 text-center">What You Get</h2>
+                <h2 class="text-2xl font-bold mb-6 text-center">Why PAWS Works</h2>
                 <div class="grid md:grid-cols-3 gap-6">
                     <div class="text-center">
                         <i class="fas fa-microphone text-4xl text-blue-400 mb-4"></i>
@@ -1312,11 +1402,21 @@ app.get('/pricing', (c) => {
                         </div>
                         
                         <ul class="space-y-2 mb-6 text-sm">
-                            <li><i class="fas fa-check text-green-400 mr-2"></i>Real-time voice AI</li>
-                            <li><i class="fas fa-check text-green-400 mr-2"></i>Coaching feedback</li>
-                            <li><i class="fas fa-check text-green-400 mr-2"></i>Multiple scenarios</li>
-                            \${plan.type !== 'free' ? '<li><i class="fas fa-check text-green-400 mr-2"></i>Session history</li>' : ''}
-                            \${plan.type === 'monthly' || plan.type === 'annual' ? '<li><i class="fas fa-check text-green-400 mr-2"></i>Grace period (2 min)</li>' : ''}
+                            ${plan.type === 'free' ? `
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Text-based AI responses</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Basic coaching feedback</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Try all scenarios</li>
+                                <li><i class="fas fa-times text-slate-500 mr-2"></i><span class="text-slate-500">No interruptions</span></li>
+                                <li><i class="fas fa-times text-slate-500 mr-2"></i><span class="text-slate-500">Basic difficulty</span></li>
+                            ` : `
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i><strong>Real-time interruptions</strong></li>
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i><strong>Advanced arguments</strong></li>
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i><strong>Angry counterparties</strong></li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Duplex voice AI</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Advanced coaching</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Session history</li>
+                                \${plan.type === 'monthly' || plan.type === 'annual' ? '<li><i class="fas fa-check text-green-400 mr-2"></i>Grace period (2 min)</li>' : ''}
+                            `}
                         </ul>
                         
                         \${actionButton}
