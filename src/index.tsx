@@ -2566,13 +2566,15 @@ app.get('/practice', authMiddleware, async (c) => {
       return c.text('Database not configured', 500)
     }
     
-    const user = c.get('user')
-    if (!user || !user.userId) {
+    const userId = c.get('userId')
+    const userEmail = c.get('userEmail')
+    
+    if (!userId) {
       return c.text('User not found', 401)
     }
     
     // Check user subscription tier
-    const subscription = await db.getUserSubscription(DB, user.userId)
+    const subscription = await db.getUserSubscription(DB, userId)
     const isFree = !subscription || subscription.plan_id === 'free'
     
     const practiceScript = isFree ? '/static/practice-free.js' : '/static/practice.js'
