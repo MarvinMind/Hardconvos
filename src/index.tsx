@@ -978,12 +978,12 @@ app.post('/api/scenario/generate', async (c) => {
 app.post('/api/session/start', authMiddleware, async (c) => {
   try {
     const { DB } = c.env
-    const user = c.get('user')
+    const userId = c.get('userId')
     const body = await c.req.json()
     const voice = body.voice || 'verse'
     
     // Get user subscription
-    const subscription = await db.getUserSubscription(DB, user.userId)
+    const subscription = await db.getUserSubscription(DB, userId)
     
     if (!subscription) {
       return c.json({ error: 'No active subscription found' }, 403)
@@ -1014,7 +1014,7 @@ app.post('/api/session/start', authMiddleware, async (c) => {
 app.post('/api/ephemeral', authMiddleware, async (c) => {
   try {
     const { DB, OPENAI_API_KEY } = c.env
-    const user = c.get('user')
+    const userId = c.get('userId')
     const body = await c.req.json()
     const voice = body.voice || 'verse'
     
@@ -1023,7 +1023,7 @@ app.post('/api/ephemeral', authMiddleware, async (c) => {
     }
     
     // Verify user has paid tier
-    const subscription = await db.getUserSubscription(DB, user.userId)
+    const subscription = await db.getUserSubscription(DB, userId)
     
     if (!subscription || subscription.plan_id === 'free') {
       return c.json({ 
@@ -1075,7 +1075,7 @@ app.post('/api/ephemeral', authMiddleware, async (c) => {
 app.post('/api/chat/stream', authMiddleware, async (c) => {
   try {
     const { DB, OPENAI_API_KEY } = c.env
-    const user = c.get('user')
+    const userId = c.get('userId')
     const { messages, voice, systemPrompt } = await c.req.json()
     
     if (!OPENAI_API_KEY) {
@@ -1083,7 +1083,7 @@ app.post('/api/chat/stream', authMiddleware, async (c) => {
     }
     
     // Verify user has free tier
-    const subscription = await db.getUserSubscription(DB, user.userId)
+    const subscription = await db.getUserSubscription(DB, userId)
     
     if (!subscription) {
       return c.json({ error: 'No active subscription found' }, 403)
