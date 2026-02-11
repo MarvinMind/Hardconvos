@@ -2560,17 +2560,25 @@ app.get('/setup', (c) => {
 
 // Practice session page
 app.get('/practice', authMiddleware, async (c) => {
-  const { DB } = c.env
-  const user = c.get('user')
-  
-  // Check user subscription tier
-  const subscription = await db.getUserSubscription(DB, user.userId)
-  const isFree = !subscription || subscription.plan_id === 'free'
-  
-  const practiceScript = isFree ? '/static/practice-free.js' : '/static/practice.js'
-  const tierBadge = isFree 
-    ? '<span class="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded text-blue-300 text-sm font-semibold">🆓 Free Tier</span>'
-    : '<span class="px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm font-semibold">⭐ Premium</span>'
+  try {
+    const { DB } = c.env
+    if (!DB) {
+      return c.text('Database not configured', 500)
+    }
+    
+    const user = c.get('user')
+    if (!user || !user.userId) {
+      return c.text('User not found', 401)
+    }
+    
+    // Check user subscription tier
+    const subscription = await db.getUserSubscription(DB, user.userId)
+    const isFree = !subscription || subscription.plan_id === 'free'
+    
+    const practiceScript = isFree ? '/static/practice-free.js' : '/static/practice.js'
+    const tierBadge = isFree 
+      ? '<span class="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded text-blue-300 text-sm font-semibold">🆓 Free Tier</span>'
+      : '<span class="px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm font-semibold">⭐ Premium</span>'
   
   return c.html(`
     <!DOCTYPE html>
@@ -2984,6 +2992,10 @@ app.get('/practice', authMiddleware, async (c) => {
     </body>
     </html>
   `)
+  } catch (error) {
+    console.error('Practice page error:', error)
+    return c.text(`Error loading practice page: ${error.message}`, 500)
+  }
 })
 
 export default app

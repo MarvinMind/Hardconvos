@@ -150,14 +150,133 @@ class PAWSSetup {
   renderConcernConfig(container) {
     const concerns = this.config.scenario.concern_options || []
     const deescalators = this.config.scenario.deescalation_options || []
+    const isJobInterview = this.config.scenario.id === 'job-interview' || this.config.scenario.id === 'employer-interview'
+    
+    // Initialize job posting fields if not already set
+    if (isJobInterview && !this.config.jobPosting) {
+      this.config.jobPosting = {
+        job_title: '',
+        company_name: '',
+        job_description: '',
+        years_experience: '',
+        key_skills: '',
+        interview_type: 'video'
+      }
+      this.config.customFlags = {
+        red_flags: [],
+        green_flags: []
+      }
+    }
 
     container.innerHTML = `
       <div class="step-content">
         <h2 class="step-heading">
           <i class="fas fa-exclamation-triangle mr-3 text-yellow-400"></i>
-          Configure Your Concerns
+          Configure Your ${isJobInterview ? 'Interview' : 'Concerns'}
         </h2>
-        <p class="step-description">Select what worries you most about this conversation</p>
+        <p class="step-description">${isJobInterview ? 'Enter job details and customize evaluation criteria' : 'Select what worries you most about this conversation'}</p>
+        
+        ${isJobInterview ? `
+        <div class="concern-section mb-6">
+          <h3 class="section-title">
+            <i class="fas fa-briefcase text-blue-400 mr-2"></i>
+            Job Details
+          </h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+              <input type="text" id="job_title" class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
+                     value="${this.config.jobPosting?.job_title || ''}" 
+                     onchange="setup.updateJobField('job_title', this.value)"
+                     placeholder="e.g., Senior Software Engineer">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+              <input type="text" id="company_name" class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
+                     value="${this.config.jobPosting?.company_name || ''}"
+                     onchange="setup.updateJobField('company_name', this.value)"
+                     placeholder="e.g., TechCorp Inc.">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Job Description (paste job advert here)</label>
+              <textarea id="job_description" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
+                        onchange="setup.updateJobField('job_description', this.value)"
+                        placeholder="Paste the full job description...">${this.config.jobPosting?.job_description || ''}</textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Years Experience</label>
+                <input type="text" id="years_experience" class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
+                       value="${this.config.jobPosting?.years_experience || ''}"
+                       onchange="setup.updateJobField('years_experience', this.value)"
+                       placeholder="e.g., 5-7 years">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Interview Type</label>
+                <select id="interview_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        onchange="setup.updateJobField('interview_type', this.value)">
+                  <option value="video" ${this.config.jobPosting?.interview_type === 'video' ? 'selected' : ''}>Video Call</option>
+                  <option value="phone" ${this.config.jobPosting?.interview_type === 'phone' ? 'selected' : ''}>Phone Screen</option>
+                  <option value="in-person" ${this.config.jobPosting?.interview_type === 'in-person' ? 'selected' : ''}>In-Person</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Key Skills Required</label>
+              <input type="text" id="key_skills" class="w-full px-3 py-2 border border-gray-300 rounded-lg" 
+                     value="${this.config.jobPosting?.key_skills || ''}"
+                     onchange="setup.updateJobField('key_skills', this.value)"
+                     placeholder="e.g., React, Node.js, AWS, Team Leadership">
+            </div>
+          </div>
+        </div>
+
+        <div class="concern-section mb-6">
+          <h3 class="section-title">
+            <i class="fas fa-flag text-red-400 mr-2"></i>
+            Custom Red Flags (Things to Avoid)
+          </h3>
+          <div class="space-y-2">
+            <div id="customRedFlags" class="space-y-2">
+              ${(this.config.customFlags?.red_flags || []).map((flag, idx) => `
+                <div class="flex gap-2">
+                  <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg" 
+                         value="${flag}" onchange="setup.updateCustomFlag('red', ${idx}, this.value)">
+                  <button class="px-3 py-2 bg-red-500 text-white rounded-lg" onclick="setup.removeCustomFlag('red', ${idx})">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+            <button class="btn-secondary" onclick="setup.addCustomFlag('red')">
+              <i class="fas fa-plus mr-2"></i>Add Custom Red Flag
+            </button>
+          </div>
+        </div>
+
+        <div class="concern-section">
+          <h3 class="section-title">
+            <i class="fas fa-flag text-green-400 mr-2"></i>
+            Custom Green Flags (Things to Demonstrate)
+          </h3>
+          <div class="space-y-2">
+            <div id="customGreenFlags" class="space-y-2">
+              ${(this.config.customFlags?.green_flags || []).map((flag, idx) => `
+                <div class="flex gap-2">
+                  <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg" 
+                         value="${flag}" onchange="setup.updateCustomFlag('green', ${idx}, this.value)">
+                  <button class="px-3 py-2 bg-red-500 text-white rounded-lg" onclick="setup.removeCustomFlag('green', ${idx})">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+            <button class="btn-secondary" onclick="setup.addCustomFlag('green')">
+              <i class="fas fa-plus mr-2"></i>Add Custom Green Flag
+            </button>
+          </div>
+        </div>
+        ` : ''}
         
         <div class="concern-section">
           <h3 class="section-title">
@@ -569,6 +688,42 @@ class PAWSSetup {
       this.currentStep--
       this.renderStep()
     }
+  }
+
+  updateJobField(field, value) {
+    if (!this.config.jobPosting) {
+      this.config.jobPosting = {}
+    }
+    this.config.jobPosting[field] = value
+  }
+
+  addCustomFlag(type) {
+    if (!this.config.customFlags) {
+      this.config.customFlags = { red_flags: [], green_flags: [] }
+    }
+    if (type === 'red') {
+      this.config.customFlags.red_flags.push('')
+    } else {
+      this.config.customFlags.green_flags.push('')
+    }
+    this.renderStep()
+  }
+
+  updateCustomFlag(type, index, value) {
+    if (type === 'red') {
+      this.config.customFlags.red_flags[index] = value
+    } else {
+      this.config.customFlags.green_flags[index] = value
+    }
+  }
+
+  removeCustomFlag(type, index) {
+    if (type === 'red') {
+      this.config.customFlags.red_flags.splice(index, 1)
+    } else {
+      this.config.customFlags.green_flags.splice(index, 1)
+    }
+    this.renderStep()
   }
 
   async startPractice() {
