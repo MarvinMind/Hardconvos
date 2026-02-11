@@ -197,8 +197,9 @@ app.post('/api/auth/register', async (c) => {
     setCookie(c, 'auth_token', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'Lax',
-      maxAge: 60 * 60 * 24 * 7 // 7 days
+      sameSite: 'None',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/'
     })
     
     return c.json({
@@ -262,8 +263,9 @@ app.post('/api/auth/login', async (c) => {
     setCookie(c, 'auth_token', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'Lax',
-      maxAge: 60 * 60 * 24 * 7 // 7 days
+      sameSite: 'None',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/'
     })
     
     return c.json({
