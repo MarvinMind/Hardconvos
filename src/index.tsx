@@ -1451,69 +1451,69 @@ app.get('/pricing', (c) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="border-b border-slate-700">
+                            <tr class="border-b border-gray-100">
                                 <td class="py-3 px-4">
-                                    <i class="fas fa-comments text-blue-400 mr-2"></i>
+                                    <i class="fas fa-comments text-blue-500 mr-2"></i>
                                     <strong>Real-Time Interruptions</strong>
-                                    <div class="text-xs text-slate-400 mt-1">Interrupt and be interrupted naturally</div>
+                                    <div class="text-xs text-gray-500 mt-1">Interrupt and be interrupted naturally</div>
                                 </td>
-                                <td class="py-3 px-4 text-center text-red-400"><i class="fas fa-times text-xl"></i></td>
-                                <td class="py-3 px-4 text-center text-green-400"><i class="fas fa-check text-xl"></i></td>
+                                <td class="py-3 px-4 text-center text-red-500"><i class="fas fa-times text-xl"></i></td>
+                                <td class="py-3 px-4 text-center text-green-500"><i class="fas fa-check text-xl"></i></td>
                             </tr>
-                            <tr class="border-b border-slate-700">
+                            <tr class="border-b border-gray-100">
                                 <td class="py-3 px-4">
-                                    <i class="fas fa-fire text-orange-400 mr-2"></i>
+                                    <i class="fas fa-fire text-orange-500 mr-2"></i>
                                     <strong>Angry Counterparties</strong>
-                                    <div class="text-xs text-slate-400 mt-1">Practice with escalating emotional intensity</div>
+                                    <div class="text-xs text-gray-500 mt-1">Practice with escalating emotional intensity</div>
                                 </td>
-                                <td class="py-3 px-4 text-center text-red-400"><i class="fas fa-times text-xl"></i></td>
-                                <td class="py-3 px-4 text-center text-green-400"><i class="fas fa-check text-xl"></i></td>
+                                <td class="py-3 px-4 text-center text-red-500"><i class="fas fa-times text-xl"></i></td>
+                                <td class="py-3 px-4 text-center text-green-500"><i class="fas fa-check text-xl"></i></td>
                             </tr>
-                            <tr class="border-b border-slate-700">
+                            <tr class="border-b border-gray-100">
                                 <td class="py-3 px-4">
-                                    <i class="fas fa-brain text-purple-400 mr-2"></i>
+                                    <i class="fas fa-brain text-purple-500 mr-2"></i>
                                     <strong>Advanced Arguments</strong>
-                                    <div class="text-xs text-slate-400 mt-1">Sophisticated pushback and objections</div>
+                                    <div class="text-xs text-gray-500 mt-1">Sophisticated pushback and objections</div>
                                 </td>
-                                <td class="py-3 px-4 text-center text-red-400"><i class="fas fa-times text-xl"></i></td>
-                                <td class="py-3 px-4 text-center text-green-400"><i class="fas fa-check text-xl"></i></td>
+                                <td class="py-3 px-4 text-center text-red-500"><i class="fas fa-times text-xl"></i></td>
+                                <td class="py-3 px-4 text-center text-green-500"><i class="fas fa-check text-xl"></i></td>
                             </tr>
-                            <tr class="border-b border-slate-700">
+                            <tr class="border-b border-gray-100">
                                 <td class="py-3 px-4">
-                                    <i class="fas fa-bolt text-yellow-400 mr-2"></i>
+                                    <i class="fas fa-bolt text-yellow-600 mr-2"></i>
                                     <strong>Realistic Voice Dynamics</strong>
-                                    <div class="text-xs text-slate-400 mt-1">Natural pitch, tone, and emotion shifts</div>
+                                    <div class="text-xs text-gray-500 mt-1">Natural pitch, tone, and emotion shifts</div>
                                 </td>
-                                <td class="py-3 px-4 text-center text-yellow-400">
+                                <td class="py-3 px-4 text-center text-yellow-600">
                                     <i class="fas fa-star-half-alt text-xl"></i>
                                     <div class="text-xs mt-1">Basic</div>
                                 </td>
-                                <td class="py-3 px-4 text-center text-green-400">
+                                <td class="py-3 px-4 text-center text-green-500">
                                     <i class="fas fa-star text-xl"></i>
                                     <div class="text-xs mt-1">Premium</div>
                                 </td>
                             </tr>
-                            <tr class="border-b border-slate-700">
+                            <tr class="border-b border-gray-100">
                                 <td class="py-3 px-4">
-                                    <i class="fas fa-clock text-blue-400 mr-2"></i>
+                                    <i class="fas fa-clock text-blue-500 mr-2"></i>
                                     <strong>Response Latency</strong>
-                                    <div class="text-xs text-slate-400 mt-1">Time between your speech and AI response</div>
+                                    <div class="text-xs text-gray-500 mt-1">Time between your speech and AI response</div>
                                 </td>
-                                <td class="py-3 px-4 text-center text-yellow-400">
+                                <td class="py-3 px-4 text-center text-yellow-600">
                                     1-2 seconds
                                 </td>
-                                <td class="py-3 px-4 text-center text-green-400">
+                                <td class="py-3 px-4 text-center text-green-500">
                                     <strong>&lt;100ms</strong>
                                 </td>
                             </tr>
                             <tr>
                                 <td class="py-3 px-4">
-                                    <i class="fas fa-history text-slate-400 mr-2"></i>
+                                    <i class="fas fa-history text-gray-500 mr-2"></i>
                                     <strong>Session History</strong>
-                                    <div class="text-xs text-slate-400 mt-1">Review past conversations and progress</div>
+                                    <div class="text-xs text-gray-500 mt-1">Review past conversations and progress</div>
                                 </td>
-                                <td class="py-3 px-4 text-center text-red-400"><i class="fas fa-times text-xl"></i></td>
-                                <td class="py-3 px-4 text-center text-green-400"><i class="fas fa-check text-xl"></i></td>
+                                <td class="py-3 px-4 text-center text-red-500"><i class="fas fa-times text-xl"></i></td>
+                                <td class="py-3 px-4 text-center text-green-500"><i class="fas fa-check text-xl"></i></td>
                             </tr>
                         </tbody>
                     </table>
@@ -1529,23 +1529,23 @@ app.get('/pricing', (c) => {
             </div>
 
             <!-- What You Get -->
-            <div class="bg-slate-800 rounded-lg p-8 border border-slate-700">
+            <div class="bg-white rounded-lg p-8 border border-gray-200">
                 <h2 class="text-2xl font-bold mb-6 text-center">Why PAWS Works</h2>
                 <div class="grid md:grid-cols-3 gap-6">
                     <div class="text-center">
-                        <i class="fas fa-microphone text-4xl text-blue-400 mb-4"></i>
+                        <i class="fas fa-microphone text-4xl text-blue-500 mb-4"></i>
                         <h3 class="text-lg font-semibold mb-2">Real-Time Voice</h3>
-                        <p class="text-sm text-slate-400">Natural duplex conversation with AI personas</p>
+                        <p class="text-sm text-gray-500">Natural duplex conversation with AI personas</p>
                     </div>
                     <div class="text-center">
-                        <i class="fas fa-chart-line text-4xl text-green-400 mb-4"></i>
+                        <i class="fas fa-chart-line text-4xl text-green-500 mb-4"></i>
                         <h3 class="text-lg font-semibold mb-2">Performance Coaching</h3>
-                        <p class="text-sm text-slate-400">Get scored feedback after every session</p>
+                        <p class="text-sm text-gray-500">Get scored feedback after every session</p>
                     </div>
                     <div class="text-center">
-                        <i class="fas fa-fire text-4xl text-orange-400 mb-4"></i>
+                        <i class="fas fa-fire text-4xl text-orange-500 mb-4"></i>
                         <h3 class="text-lg font-semibold mb-2">Dynamic Difficulty</h3>
-                        <p class="text-sm text-slate-400">AI adapts pressure based on your responses</p>
+                        <p class="text-sm text-gray-500">AI adapts pressure based on your responses</p>
                     </div>
                 </div>
             </div>
@@ -1562,7 +1562,7 @@ app.get('/pricing', (c) => {
                     if (response.ok) {
                         const data = await response.json();
                         document.getElementById('authNav').innerHTML = \`
-                            <a href="/account" class="text-slate-300 hover:text-white">
+                            <a href="/account" class="text-gray-700 hover:text-white">
                                 <i class="fas fa-user mr-1"></i>Account
                             </a>
                             <a href="/setup" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
@@ -1572,7 +1572,7 @@ app.get('/pricing', (c) => {
                         return data;
                     } else {
                         document.getElementById('authNav').innerHTML = \`
-                            <a href="/login" class="text-slate-300 hover:text-white">Login</a>
+                            <a href="/login" class="text-gray-700 hover:text-white">Login</a>
                             <a href="/register" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg">
                                 Start Free
                             </a>
@@ -1624,8 +1624,8 @@ app.get('/pricing', (c) => {
                 } catch (error) {
                     document.getElementById('pricingContainer').innerHTML = \`
                         <div class="col-span-full text-center py-12">
-                            <i class="fas fa-exclamation-triangle text-4xl text-red-400"></i>
-                            <p class="mt-4 text-slate-400">Failed to load pricing plans</p>
+                            <i class="fas fa-exclamation-triangle text-4xl text-red-500"></i>
+                            <p class="mt-4 text-gray-500">Failed to load pricing plans</p>
                         </div>
                     \`;
                 }
@@ -1642,38 +1642,38 @@ app.get('/pricing', (c) => {
                     : '<a href="/register" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-all">Get Started</a>';
                 
                 return \`
-                    <div class="bg-slate-800 rounded-lg p-6 border \${recommended ? 'border-blue-500 border-2' : 'border-slate-700'} \${isCurrentPlan ? 'opacity-75' : ''} relative">
+                    <div class="bg-white rounded-lg p-6 border \${recommended ? 'border-blue-500 border-2' : 'border-gray-200'} \${isCurrentPlan ? 'opacity-75' : ''} relative">
                         \${recommended ? '<div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">RECOMMENDED</div>' : ''}
                         \${isAnnual ? '<div class="absolute -top-3 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">17% OFF</div>' : ''}
                         
                         <h3 class="text-xl font-bold mb-2">\${plan.name}</h3>
                         <div class="text-3xl font-bold mb-4">
                             $\${plan.price.toFixed(2)}
-                            <span class="text-sm text-slate-400 font-normal">/\${plan.billing_cycle === 'one_time' ? 'purchase' : plan.billing_cycle === 'annual' ? 'year' : 'month'}</span>
+                            <span class="text-sm text-gray-500 font-normal">/\${plan.billing_cycle === 'one_time' ? 'purchase' : plan.billing_cycle === 'annual' ? 'year' : 'month'}</span>
                         </div>
                         
                         <div class="mb-6">
-                            <div class="text-2xl font-semibold text-blue-400">\${plan.minutes_included} minutes</div>
-                            <div class="text-sm text-slate-400">
+                            <div class="text-2xl font-semibold text-blue-500">\${plan.minutes_included} minutes</div>
+                            <div class="text-sm text-gray-500">
                                 \${plan.type === 'payperuse' ? 'Reusable credits' : plan.type === 'annual' ? 'Per month (refreshes monthly)' : 'Per month (no rollover)'}
                             </div>
                         </div>
                         
                         <ul class="space-y-2 mb-6 text-sm">
                             ${plan.type === 'free' ? `
-                                <li><i class="fas fa-check text-green-400 mr-2"></i>Text-based AI responses</li>
-                                <li><i class="fas fa-check text-green-400 mr-2"></i>Basic coaching feedback</li>
-                                <li><i class="fas fa-check text-green-400 mr-2"></i>Try all scenarios</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Text-based AI responses</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Basic coaching feedback</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Try all scenarios</li>
                                 <li><i class="fas fa-times text-slate-500 mr-2"></i><span class="text-slate-500">No interruptions</span></li>
                                 <li><i class="fas fa-times text-slate-500 mr-2"></i><span class="text-slate-500">Basic difficulty</span></li>
                             ` : `
-                                <li><i class="fas fa-star text-yellow-400 mr-2"></i><strong>Real-time interruptions</strong></li>
-                                <li><i class="fas fa-star text-yellow-400 mr-2"></i><strong>Advanced arguments</strong></li>
-                                <li><i class="fas fa-star text-yellow-400 mr-2"></i><strong>Angry counterparties</strong></li>
-                                <li><i class="fas fa-check text-green-400 mr-2"></i>Duplex voice AI</li>
-                                <li><i class="fas fa-check text-green-400 mr-2"></i>Advanced coaching</li>
-                                <li><i class="fas fa-check text-green-400 mr-2"></i>Session history</li>
-                                \${plan.type === 'monthly' || plan.type === 'annual' ? '<li><i class="fas fa-check text-green-400 mr-2"></i>Grace period (2 min)</li>' : ''}
+                                <li><i class="fas fa-star text-yellow-600 mr-2"></i><strong>Real-time interruptions</strong></li>
+                                <li><i class="fas fa-star text-yellow-600 mr-2"></i><strong>Advanced arguments</strong></li>
+                                <li><i class="fas fa-star text-yellow-600 mr-2"></i><strong>Angry counterparties</strong></li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Duplex voice AI</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Advanced coaching</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Session history</li>
+                                \${plan.type === 'monthly' || plan.type === 'annual' ? '<li><i class="fas fa-check text-green-500 mr-2"></i>Grace period (2 min)</li>' : ''}
                             `}
                         </ul>
                         
@@ -1734,11 +1734,11 @@ app.get('/admin', authMiddleware, (c) => {
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-3xl font-bold">🐾 PAWS Admin</h1>
-                    <p class="text-slate-400 text-sm">Cost Analysis & Business Metrics</p>
+                    <p class="text-gray-500 text-sm">Cost Analysis & Business Metrics</p>
                 </div>
                 <div class="space-x-4">
-                    <a href="/account" class="text-slate-300 hover:text-white">My Account</a>
-                    <a href="/pricing" class="text-slate-300 hover:text-white">Pricing</a>
+                    <a href="/account" class="text-gray-700 hover:text-white">My Account</a>
+                    <a href="/pricing" class="text-gray-700 hover:text-white">Pricing</a>
                 </div>
             </div>
         </div>
@@ -1746,8 +1746,8 @@ app.get('/admin', authMiddleware, (c) => {
         <div class="container mx-auto px-4 py-8 max-w-7xl">
             <!-- Loading State -->
             <div id="loadingState" class="text-center py-12">
-                <i class="fas fa-spinner fa-spin text-4xl text-blue-400"></i>
-                <p class="mt-4 text-slate-400">Loading dashboard data...</p>
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+                <p class="mt-4 text-gray-500">Loading dashboard data...</p>
             </div>
 
             <!-- Main Content -->
@@ -1755,82 +1755,82 @@ app.get('/admin', authMiddleware, (c) => {
                 <!-- Key Metrics Grid -->
                 <div class="grid md:grid-cols-4 gap-6">
                     <!-- Total Users -->
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
                         <div class="flex items-center justify-between mb-2">
-                            <i class="fas fa-users text-3xl text-blue-400"></i>
-                            <span class="text-sm text-slate-400">Total</span>
+                            <i class="fas fa-users text-3xl text-blue-500"></i>
+                            <span class="text-sm text-gray-500">Total</span>
                         </div>
                         <div id="totalUsers" class="text-3xl font-bold">-</div>
-                        <div class="text-sm text-slate-400 mt-1">Users</div>
+                        <div class="text-sm text-gray-500 mt-1">Users</div>
                     </div>
 
                     <!-- Total Revenue -->
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
                         <div class="flex items-center justify-between mb-2">
-                            <i class="fas fa-dollar-sign text-3xl text-green-400"></i>
-                            <span class="text-sm text-slate-400">Lifetime</span>
+                            <i class="fas fa-dollar-sign text-3xl text-green-500"></i>
+                            <span class="text-sm text-gray-500">Lifetime</span>
                         </div>
                         <div id="totalRevenue" class="text-3xl font-bold">-</div>
-                        <div class="text-sm text-slate-400 mt-1">Revenue</div>
+                        <div class="text-sm text-gray-500 mt-1">Revenue</div>
                     </div>
 
                     <!-- Total Costs -->
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
                         <div class="flex items-center justify-between mb-2">
-                            <i class="fas fa-coins text-3xl text-red-400"></i>
-                            <span class="text-sm text-slate-400">OpenAI</span>
+                            <i class="fas fa-coins text-3xl text-red-500"></i>
+                            <span class="text-sm text-gray-500">OpenAI</span>
                         </div>
                         <div id="totalCosts" class="text-3xl font-bold">-</div>
-                        <div class="text-sm text-slate-400 mt-1">Costs</div>
+                        <div class="text-sm text-gray-500 mt-1">Costs</div>
                     </div>
 
                     <!-- Gross Profit -->
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
                         <div class="flex items-center justify-between mb-2">
-                            <i class="fas fa-chart-line text-3xl text-yellow-400"></i>
-                            <span class="text-sm text-slate-400">Margin</span>
+                            <i class="fas fa-chart-line text-3xl text-yellow-600"></i>
+                            <span class="text-sm text-gray-500">Margin</span>
                         </div>
                         <div id="grossProfit" class="text-3xl font-bold">-</div>
-                        <div id="profitMargin" class="text-sm text-slate-400 mt-1">-%</div>
+                        <div id="profitMargin" class="text-sm text-gray-500 mt-1">-%</div>
                     </div>
                 </div>
 
                 <!-- Conversion Metrics -->
                 <div class="grid md:grid-cols-3 gap-6">
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
                         <h3 class="text-lg font-semibold mb-4">
-                            <i class="fas fa-percent mr-2 text-blue-400"></i>
+                            <i class="fas fa-percent mr-2 text-blue-500"></i>
                             Conversion Rate
                         </h3>
-                        <div id="conversionRate" class="text-4xl font-bold text-blue-400">-%</div>
-                        <div class="text-sm text-slate-400 mt-2">Free → Paid conversion</div>
+                        <div id="conversionRate" class="text-4xl font-bold text-blue-500">-%</div>
+                        <div class="text-sm text-gray-500 mt-2">Free → Paid conversion</div>
                     </div>
 
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
                         <h3 class="text-lg font-semibold mb-4">
-                            <i class="fas fa-user-clock mr-2 text-green-400"></i>
+                            <i class="fas fa-user-clock mr-2 text-green-500"></i>
                             Avg Revenue Per User
                         </h3>
-                        <div id="arpu" class="text-4xl font-bold text-green-400">$-</div>
-                        <div class="text-sm text-slate-400 mt-2">ARPU (all users)</div>
+                        <div id="arpu" class="text-4xl font-bold text-green-500">$-</div>
+                        <div class="text-sm text-gray-500 mt-2">ARPU (all users)</div>
                     </div>
 
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
                         <h3 class="text-lg font-semibold mb-4">
-                            <i class="fas fa-stopwatch mr-2 text-purple-400"></i>
+                            <i class="fas fa-stopwatch mr-2 text-purple-500"></i>
                             Avg Session Duration
                         </h3>
-                        <div id="avgDuration" class="text-4xl font-bold text-purple-400">-</div>
-                        <div class="text-sm text-slate-400 mt-2">minutes per session</div>
+                        <div id="avgDuration" class="text-4xl font-bold text-purple-500">-</div>
+                        <div class="text-sm text-gray-500 mt-2">minutes per session</div>
                     </div>
                 </div>
 
                 <!-- User Breakdown -->
                 <div class="grid md:grid-cols-2 gap-6">
                     <!-- User Distribution -->
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
                         <h3 class="text-lg font-semibold mb-4">
-                            <i class="fas fa-chart-pie mr-2 text-yellow-400"></i>
+                            <i class="fas fa-chart-pie mr-2 text-yellow-600"></i>
                             User Distribution by Plan
                         </h3>
                         <div id="planDistribution" class="space-y-3">
@@ -1839,9 +1839,9 @@ app.get('/admin', authMiddleware, (c) => {
                     </div>
 
                     <!-- Recent Activity -->
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
                         <h3 class="text-lg font-semibold mb-4">
-                            <i class="fas fa-clock mr-2 text-orange-400"></i>
+                            <i class="fas fa-clock mr-2 text-orange-500"></i>
                             Recent Sessions
                         </h3>
                         <div id="recentSessions" class="space-y-2 max-h-64 overflow-y-auto">
@@ -1851,26 +1851,26 @@ app.get('/admin', authMiddleware, (c) => {
                 </div>
 
                 <!-- Cost Analysis -->
-                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
                     <h2 class="text-xl font-bold mb-4">
-                        <i class="fas fa-calculator mr-2 text-red-400"></i>
+                        <i class="fas fa-calculator mr-2 text-red-500"></i>
                         Cost Analysis & Recommendations
                     </h2>
                     
                     <div class="grid md:grid-cols-3 gap-6 mb-6">
                         <div class="text-center p-4 bg-slate-900 rounded">
-                            <div class="text-sm text-slate-400 mb-1">Current Cost/Min</div>
-                            <div class="text-2xl font-bold text-red-400">$0.30</div>
+                            <div class="text-sm text-gray-500 mb-1">Current Cost/Min</div>
+                            <div class="text-2xl font-bold text-red-500">$0.30</div>
                             <div class="text-xs text-slate-500 mt-1">OpenAI Realtime API</div>
                         </div>
                         <div class="text-center p-4 bg-slate-900 rounded">
-                            <div class="text-sm text-slate-400 mb-1">Revenue/Min (Avg)</div>
-                            <div id="revenuePerMin" class="text-2xl font-bold text-green-400">$-</div>
+                            <div class="text-sm text-gray-500 mb-1">Revenue/Min (Avg)</div>
+                            <div id="revenuePerMin" class="text-2xl font-bold text-green-500">$-</div>
                             <div class="text-xs text-slate-500 mt-1">Across all paid users</div>
                         </div>
                         <div class="text-center p-4 bg-slate-900 rounded">
-                            <div class="text-sm text-slate-400 mb-1">Margin</div>
-                            <div id="marginPercent" class="text-2xl font-bold text-yellow-400">-%</div>
+                            <div class="text-sm text-gray-500 mb-1">Margin</div>
+                            <div id="marginPercent" class="text-2xl font-bold text-yellow-600">-%</div>
                             <div class="text-xs text-slate-500 mt-1">Target: 70%+</div>
                         </div>
                     </div>
@@ -1950,7 +1950,7 @@ app.get('/admin', authMiddleware, (c) => {
                         </div>
                         <div class="flex items-center gap-3">
                             <span class="text-sm font-semibold">\${item.count} users</span>
-                            <span class="text-xs text-slate-400">(\${item.percentage.toFixed(1)}%)</span>
+                            <span class="text-xs text-gray-500">(\${item.percentage.toFixed(1)}%)</span>
                         </div>
                     </div>
                 \`).join('');
@@ -1960,20 +1960,20 @@ app.get('/admin', authMiddleware, (c) => {
                 const container = document.getElementById('recentSessions');
                 
                 if (sessions.length === 0) {
-                    container.innerHTML = '<div class="text-sm text-slate-400 text-center py-4">No recent sessions</div>';
+                    container.innerHTML = '<div class="text-sm text-gray-500 text-center py-4">No recent sessions</div>';
                     return;
                 }
                 
                 container.innerHTML = sessions.map(session => \`
                     <div class="text-xs bg-slate-900 rounded p-2 flex justify-between items-center">
                         <div>
-                            <span class="text-slate-300">\${session.user_email || 'Anonymous'}</span>
+                            <span class="text-gray-700">\${session.user_email || 'Anonymous'}</span>
                             <span class="text-slate-500 ml-2">\${new Date(session.session_start * 1000).toLocaleString()}</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="text-blue-400">\${Math.floor(session.duration_seconds / 60)}:\${(session.duration_seconds % 60).toString().padStart(2, '0')}</span>
+                            <span class="text-blue-500">\${Math.floor(session.duration_seconds / 60)}:\${(session.duration_seconds % 60).toString().padStart(2, '0')}</span>
                             <span class="text-slate-500">·</span>
-                            <span class="text-green-400">\${session.plan_name || 'Free'}</span>
+                            <span class="text-green-500">\${session.plan_name || 'Free'}</span>
                         </div>
                     </div>
                 \`).join('');
@@ -2020,7 +2020,7 @@ app.get('/admin', authMiddleware, (c) => {
                 }
                 
                 if (recommendations.length === 0) {
-                    container.innerHTML = '<div class="text-sm text-slate-400">No recommendations at this time.</div>';
+                    container.innerHTML = '<div class="text-sm text-gray-500">No recommendations at this time.</div>';
                     return;
                 }
                 
@@ -2029,7 +2029,7 @@ app.get('/admin', authMiddleware, (c) => {
                         <i class="fas \${rec.icon} text-\${rec.color}-400 text-xl mt-1"></i>
                         <div>
                             <div class="font-semibold text-\${rec.color}-400">\${rec.title}</div>
-                            <div class="text-sm text-slate-300 mt-1">\${rec.message}</div>
+                            <div class="text-sm text-gray-700 mt-1">\${rec.message}</div>
                         </div>
                     </div>
                 \`).join('');
@@ -2061,9 +2061,9 @@ app.get('/account', (c) => {
             <div class="flex justify-between items-center">
                 <a href="/" class="text-3xl">🐾 PAWS</a>
                 <div class="space-x-4">
-                    <a href="/pricing" class="text-slate-300 hover:text-white">Pricing</a>
+                    <a href="/pricing" class="text-gray-700 hover:text-white">Pricing</a>
                     <a href="/setup" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">Practice</a>
-                    <button onclick="handleLogout()" class="text-slate-300 hover:text-white">
+                    <button onclick="handleLogout()" class="text-gray-700 hover:text-white">
                         <i class="fas fa-sign-out-alt mr-1"></i>Logout
                     </button>
                 </div>
@@ -2073,43 +2073,43 @@ app.get('/account', (c) => {
         <div class="container mx-auto px-4 py-8 max-w-6xl">
             <!-- Loading State -->
             <div id="loadingState" class="text-center py-12">
-                <i class="fas fa-spinner fa-spin text-4xl text-blue-400"></i>
-                <p class="mt-4 text-slate-400">Loading your account...</p>
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+                <p class="mt-4 text-gray-500">Loading your account...</p>
             </div>
 
             <!-- Main Content (hidden until loaded) -->
             <div id="mainContent" class="hidden space-y-6">
                 <!-- Profile Card -->
-                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
                     <h2 class="text-2xl font-bold mb-4">
-                        <i class="fas fa-user mr-2 text-blue-400"></i>
+                        <i class="fas fa-user mr-2 text-blue-500"></i>
                         Profile
                     </h2>
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
-                            <div class="text-sm text-slate-400">Name</div>
+                            <div class="text-sm text-gray-500">Name</div>
                             <div id="userName" class="text-lg font-semibold">-</div>
                         </div>
                         <div>
-                            <div class="text-sm text-slate-400">Email</div>
+                            <div class="text-sm text-gray-500">Email</div>
                             <div id="userEmail" class="text-lg font-semibold">-</div>
                         </div>
                         <div>
-                            <div class="text-sm text-slate-400">Member Since</div>
+                            <div class="text-sm text-gray-500">Member Since</div>
                             <div id="memberSince" class="text-lg font-semibold">-</div>
                         </div>
                         <div>
-                            <div class="text-sm text-slate-400">Email Verified</div>
+                            <div class="text-sm text-gray-500">Email Verified</div>
                             <div id="emailVerified" class="text-lg font-semibold">-</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Subscription Card -->
-                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
                     <div class="flex justify-between items-start mb-4">
                         <h2 class="text-2xl font-bold">
-                            <i class="fas fa-credit-card mr-2 text-green-400"></i>
+                            <i class="fas fa-credit-card mr-2 text-green-500"></i>
                             Subscription
                         </h2>
                         <a href="/pricing" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm">
@@ -2119,25 +2119,25 @@ app.get('/account', (c) => {
                     
                     <div class="grid md:grid-cols-3 gap-4">
                         <div>
-                            <div class="text-sm text-slate-400">Current Plan</div>
+                            <div class="text-sm text-gray-500">Current Plan</div>
                             <div id="currentPlan" class="text-lg font-semibold">-</div>
                         </div>
                         <div>
-                            <div class="text-sm text-slate-400">Status</div>
+                            <div class="text-sm text-gray-500">Status</div>
                             <div id="planStatus" class="text-lg font-semibold">-</div>
                         </div>
                         <div>
-                            <div class="text-sm text-slate-400">Renews On</div>
+                            <div class="text-sm text-gray-500">Renews On</div>
                             <div id="renewsOn" class="text-lg font-semibold">-</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Credits Card -->
-                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
                     <div class="flex justify-between items-start mb-4">
                         <h2 class="text-2xl font-bold">
-                            <i class="fas fa-clock mr-2 text-yellow-400"></i>
+                            <i class="fas fa-clock mr-2 text-yellow-600"></i>
                             Available Time
                         </h2>
                         <button onclick="handleAddMinutes()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm">
@@ -2146,14 +2146,14 @@ app.get('/account', (c) => {
                     </div>
                     
                     <div class="text-center py-8">
-                        <div id="remainingTime" class="text-6xl font-bold text-blue-400 mb-2">-</div>
-                        <div class="text-slate-400">minutes remaining</div>
+                        <div id="remainingTime" class="text-6xl font-bold text-blue-500 mb-2">-</div>
+                        <div class="text-gray-500">minutes remaining</div>
                         <div id="creditType" class="text-sm text-slate-500 mt-2">-</div>
                     </div>
                     
                     <div class="bg-slate-900 rounded-lg p-4 mt-4">
                         <div class="flex justify-between text-sm">
-                            <span class="text-slate-400">Original Allocation</span>
+                            <span class="text-gray-500">Original Allocation</span>
                             <span id="originalAllocation" class="font-semibold">-</span>
                         </div>
                         <div class="w-full bg-slate-700 rounded-full h-2 mt-2">
@@ -2163,14 +2163,14 @@ app.get('/account', (c) => {
                 </div>
 
                 <!-- Usage History Card -->
-                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
                     <h2 class="text-2xl font-bold mb-4">
-                        <i class="fas fa-history mr-2 text-purple-400"></i>
+                        <i class="fas fa-history mr-2 text-purple-500"></i>
                         Recent Sessions
                     </h2>
                     
                     <div id="usageHistory" class="space-y-2">
-                        <div class="text-center py-8 text-slate-400">
+                        <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
                             <p>Loading history...</p>
                         </div>
@@ -2180,7 +2180,7 @@ app.get('/account', (c) => {
 
             <!-- Error State -->
             <div id="errorState" class="hidden text-center py-12">
-                <i class="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
+                <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
                 <p class="text-xl mb-4">Please log in to view your account</p>
                 <a href="/login" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg inline-block">
                     Go to Login
@@ -2253,19 +2253,19 @@ app.get('/account', (c) => {
                             <div class="bg-slate-900 rounded-lg p-4 flex justify-between items-center">
                                 <div>
                                     <div class="font-semibold">\${session.scenario_id || 'Practice Session'}</div>
-                                    <div class="text-sm text-slate-400">\${new Date(session.session_start * 1000).toLocaleString()}</div>
+                                    <div class="text-sm text-gray-500">\${new Date(session.session_start * 1000).toLocaleString()}</div>
                                 </div>
                                 <div class="text-right">
                                     <div class="font-semibold">\${session.duration_minutes}m \${session.duration_seconds % 60}s</div>
-                                    <div class="text-sm text-slate-400">\${session.status}</div>
+                                    <div class="text-sm text-gray-500">\${session.status}</div>
                                 </div>
                             </div>
                         \`).join('');
                     } else {
-                        container.innerHTML = '<div class="text-center py-8 text-slate-400">No sessions yet. <a href="/setup" class="text-blue-400 hover:text-blue-300">Start practicing!</a></div>';
+                        container.innerHTML = '<div class="text-center py-8 text-gray-500">No sessions yet. <a href="/setup" class="text-blue-500 hover:text-blue-300">Start practicing!</a></div>';
                     }
                 } catch (error) {
-                    document.getElementById('usageHistory').innerHTML = '<div class="text-center py-8 text-red-400">Failed to load history</div>';
+                    document.getElementById('usageHistory').innerHTML = '<div class="text-center py-8 text-red-500">Failed to load history</div>';
                 }
             }
             
@@ -2671,7 +2671,7 @@ app.get('/practice', authMiddleware, async (c) => {
 
                     <!-- Push-to-Talk Button (Free Tier Only) -->
                     <button id="pushToTalkBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-6 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 hidden disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="fas fa-microphone text-blue-400 text-3xl"></i>
+                        <i class="fas fa-microphone text-blue-500 text-3xl"></i>
                         <br>
                         <span class="text-blue-300">Hold to Speak</span>
                     </button>
@@ -2681,13 +2681,13 @@ app.get('/practice', authMiddleware, async (c) => {
                         <div class="recording-indicator bg-red-500 rounded-full p-3 pulse-ring">
                             <i class="fas fa-microphone text-white text-xl"></i>
                         </div>
-                        <span class="ml-3 text-sm font-semibold text-red-400">LIVE</span>
+                        <span class="ml-3 text-sm font-semibold text-red-500">LIVE</span>
                     </div>
 
                     <!-- Audio Levels -->
                     <div class="mt-4">
                         <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs text-slate-400">Your Audio Level:</span>
+                            <span class="text-xs text-gray-500">Your Audio Level:</span>
                         </div>
                         <div class="w-full bg-slate-700 rounded-full h-2">
                             <div id="audioLevel" class="bg-green-500 h-2 rounded-full transition-all duration-100" style="width: 0%"></div>
@@ -2696,14 +2696,14 @@ app.get('/practice', authMiddleware, async (c) => {
                 </div>
 
                 <!-- Right Panel: Live Captions -->
-                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
                     <h2 class="text-xl font-semibold mb-4">
-                        <i class="fas fa-closed-captioning mr-2 text-purple-400"></i>
+                        <i class="fas fa-closed-captioning mr-2 text-purple-500"></i>
                         Live Transcript
                     </h2>
                     
                     <div id="transcript" class="h-96 overflow-y-auto space-y-3 text-sm">
-                        <div class="text-slate-400 text-center py-8">
+                        <div class="text-gray-500 text-center py-8">
                             <i class="fas fa-info-circle text-3xl mb-2"></i>
                             <p>Transcript will appear here when you start the conversation</p>
                         </div>
@@ -2712,16 +2712,16 @@ app.get('/practice', authMiddleware, async (c) => {
             </div>
 
             <!-- Debrief Section -->
-            <div id="debriefSection" class="hidden mt-6 bg-slate-800 rounded-lg p-6 border border-slate-700">
+            <div id="debriefSection" class="hidden mt-6 bg-white rounded-lg p-6 border border-gray-200">
                 <h2 class="text-2xl font-semibold mb-4">
-                    <i class="fas fa-clipboard-check mr-2 text-yellow-400"></i>
+                    <i class="fas fa-clipboard-check mr-2 text-yellow-600"></i>
                     Coaching Debrief
                 </h2>
                 
                 <div id="debriefContent" class="space-y-4">
                     <div class="flex items-center justify-center py-8">
-                        <i class="fas fa-spinner fa-spin text-3xl text-blue-400"></i>
-                        <span class="ml-3 text-slate-400">Analyzing your performance...</span>
+                        <i class="fas fa-spinner fa-spin text-3xl text-blue-500"></i>
+                        <span class="ml-3 text-gray-500">Analyzing your performance...</span>
                     </div>
                 </div>
             </div>
@@ -2729,12 +2729,12 @@ app.get('/practice', authMiddleware, async (c) => {
 
         <!-- Upgrade Modal -->
         <div id="upgradeModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-            <div class="bg-slate-800 rounded-lg p-8 max-w-md border border-slate-700">
+            <div class="bg-white rounded-lg p-8 max-w-md border border-gray-200">
                 <h2 class="text-2xl font-bold mb-4">
-                    <i class="fas fa-clock text-yellow-400 mr-2"></i>
+                    <i class="fas fa-clock text-yellow-600 mr-2"></i>
                     Credits Exhausted
                 </h2>
-                <p class="text-slate-300 mb-6">You've used all your available conversation time. Add more minutes to continue practicing!</p>
+                <p class="text-gray-700 mb-6">You've used all your available conversation time. Add more minutes to continue practicing!</p>
                 
                 <div class="space-y-3">
                     <a href="/pricing" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-all">
@@ -2745,7 +2745,7 @@ app.get('/practice', authMiddleware, async (c) => {
                         <i class="fas fa-user mr-2"></i>
                         Go to Account
                     </a>
-                    <button onclick="closeUpgradeModal()" class="w-full text-slate-400 hover:text-white py-2">
+                    <button onclick="closeUpgradeModal()" class="w-full text-gray-500 hover:text-white py-2">
                         Close
                     </button>
                 </div>
