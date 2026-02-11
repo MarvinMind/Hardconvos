@@ -7,12 +7,11 @@
     "nodejs_compat"
   ],
   // D1 Database for user management and subscriptions
-  // After creating the database via dashboard, uncomment and add the database_id
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "paws-users",
-      "database_id": "YOUR_DATABASE_ID_HERE"
+      "database_id": "ec96c0e1-5dd6-40c1-b2aa-40140e979b59"
     }
   ]
   // "vars": {
