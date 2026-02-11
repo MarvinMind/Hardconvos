@@ -1634,7 +1634,7 @@ app.get('/pricing', (c) => {
             function renderCard(plan, userData, recommended = false, isAnnual = false) {
                 const isCurrentPlan = userData?.subscription?.plan_id === plan.id;
                 const actionButton = isCurrentPlan 
-                    ? '<button class="w-full bg-slate-600 text-white font-bold py-3 px-6 rounded-lg cursor-not-allowed" disabled>Current Plan</button>'
+                    ? '<button class="w-full bg-gray-600 text-white font-bold py-3 px-6 rounded-lg cursor-not-allowed" disabled>Current Plan</button>'
                     : plan.type === 'free'
                     ? '<a href="/register" class="block w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-all">Start Free</a>'
                     : userData
@@ -1660,21 +1660,21 @@ app.get('/pricing', (c) => {
                         </div>
                         
                         <ul class="space-y-2 mb-6 text-sm">
-                            ${plan.type === 'free' ? `
+                            \${plan.type === 'free' ? \`
                                 <li><i class="fas fa-check text-green-500 mr-2"></i>Text-based AI responses</li>
                                 <li><i class="fas fa-check text-green-500 mr-2"></i>Basic coaching feedback</li>
                                 <li><i class="fas fa-check text-green-500 mr-2"></i>Try all scenarios</li>
-                                <li><i class="fas fa-times text-slate-500 mr-2"></i><span class="text-slate-500">No interruptions</span></li>
-                                <li><i class="fas fa-times text-slate-500 mr-2"></i><span class="text-slate-500">Basic difficulty</span></li>
-                            ` : `
+                                <li><i class="fas fa-times text-gray-500 mr-2"></i><span class="text-gray-500">No interruptions</span></li>
+                                <li><i class="fas fa-times text-gray-500 mr-2"></i><span class="text-gray-500">Basic difficulty</span></li>
+                            \` : \`
                                 <li><i class="fas fa-star text-yellow-600 mr-2"></i><strong>Real-time interruptions</strong></li>
                                 <li><i class="fas fa-star text-yellow-600 mr-2"></i><strong>Advanced arguments</strong></li>
                                 <li><i class="fas fa-star text-yellow-600 mr-2"></i><strong>Angry counterparties</strong></li>
                                 <li><i class="fas fa-check text-green-500 mr-2"></i>Duplex voice AI</li>
                                 <li><i class="fas fa-check text-green-500 mr-2"></i>Advanced coaching</li>
                                 <li><i class="fas fa-check text-green-500 mr-2"></i>Session history</li>
-                                \${plan.type === 'monthly' || plan.type === 'annual' ? '<li><i class="fas fa-check text-green-500 mr-2"></i>Grace period (2 min)</li>' : ''}
-                            `}
+                                \${(plan.type === 'monthly' || plan.type === 'annual') ? '<li><i class="fas fa-check text-green-500 mr-2"></i>Grace period (2 min)</li>' : ''}
+                            \`}
                         </ul>
                         
                         \${actionButton}
@@ -1858,20 +1858,20 @@ app.get('/admin', authMiddleware, (c) => {
                     </h2>
                     
                     <div class="grid md:grid-cols-3 gap-6 mb-6">
-                        <div class="text-center p-4 bg-slate-900 rounded">
+                        <div class="text-center p-4 bg-gray-900 rounded">
                             <div class="text-sm text-gray-500 mb-1">Current Cost/Min</div>
                             <div class="text-2xl font-bold text-red-500">$0.30</div>
-                            <div class="text-xs text-slate-500 mt-1">OpenAI Realtime API</div>
+                            <div class="text-xs text-gray-500 mt-1">OpenAI Realtime API</div>
                         </div>
-                        <div class="text-center p-4 bg-slate-900 rounded">
+                        <div class="text-center p-4 bg-gray-900 rounded">
                             <div class="text-sm text-gray-500 mb-1">Revenue/Min (Avg)</div>
                             <div id="revenuePerMin" class="text-2xl font-bold text-green-500">$-</div>
-                            <div class="text-xs text-slate-500 mt-1">Across all paid users</div>
+                            <div class="text-xs text-gray-500 mt-1">Across all paid users</div>
                         </div>
-                        <div class="text-center p-4 bg-slate-900 rounded">
+                        <div class="text-center p-4 bg-gray-900 rounded">
                             <div class="text-sm text-gray-500 mb-1">Margin</div>
                             <div id="marginPercent" class="text-2xl font-bold text-yellow-600">-%</div>
-                            <div class="text-xs text-slate-500 mt-1">Target: 70%+</div>
+                            <div class="text-xs text-gray-500 mt-1">Target: 70%+</div>
                         </div>
                     </div>
 
@@ -1936,7 +1936,7 @@ app.get('/admin', authMiddleware, (c) => {
             function renderPlanDistribution(distribution) {
                 const container = document.getElementById('planDistribution');
                 const colors = {
-                    'free': 'bg-slate-600',
+                    'free': 'bg-gray-600',
                     'payperuse': 'bg-blue-600',
                     'monthly': 'bg-green-600',
                     'annual': 'bg-purple-600'
@@ -1965,14 +1965,14 @@ app.get('/admin', authMiddleware, (c) => {
                 }
                 
                 container.innerHTML = sessions.map(session => \`
-                    <div class="text-xs bg-slate-900 rounded p-2 flex justify-between items-center">
+                    <div class="text-xs bg-gray-900 rounded p-2 flex justify-between items-center">
                         <div>
                             <span class="text-gray-700">\${session.user_email || 'Anonymous'}</span>
-                            <span class="text-slate-500 ml-2">\${new Date(session.session_start * 1000).toLocaleString()}</span>
+                            <span class="text-gray-500 ml-2">\${new Date(session.session_start * 1000).toLocaleString()}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-blue-500">\${Math.floor(session.duration_seconds / 60)}:\${(session.duration_seconds % 60).toString().padStart(2, '0')}</span>
-                            <span class="text-slate-500">·</span>
+                            <span class="text-gray-500">·</span>
                             <span class="text-green-500">\${session.plan_name || 'Free'}</span>
                         </div>
                     </div>
@@ -2025,7 +2025,7 @@ app.get('/admin', authMiddleware, (c) => {
                 }
                 
                 container.innerHTML = recommendations.map(rec => \`
-                    <div class="flex items-start gap-3 p-3 bg-slate-900 rounded">
+                    <div class="flex items-start gap-3 p-3 bg-gray-900 rounded">
                         <i class="fas \${rec.icon} text-\${rec.color}-400 text-xl mt-1"></i>
                         <div>
                             <div class="font-semibold text-\${rec.color}-400">\${rec.title}</div>
@@ -2148,10 +2148,10 @@ app.get('/account', (c) => {
                     <div class="text-center py-8">
                         <div id="remainingTime" class="text-6xl font-bold text-blue-500 mb-2">-</div>
                         <div class="text-gray-500">minutes remaining</div>
-                        <div id="creditType" class="text-sm text-slate-500 mt-2">-</div>
+                        <div id="creditType" class="text-sm text-gray-500 mt-2">-</div>
                     </div>
                     
-                    <div class="bg-slate-900 rounded-lg p-4 mt-4">
+                    <div class="bg-gray-900 rounded-lg p-4 mt-4">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-500">Original Allocation</span>
                             <span id="originalAllocation" class="font-semibold">-</span>
@@ -2250,7 +2250,7 @@ app.get('/account', (c) => {
                     
                     if (data.sessions && data.sessions.length > 0) {
                         container.innerHTML = data.sessions.map(session => \`
-                            <div class="bg-slate-900 rounded-lg p-4 flex justify-between items-center">
+                            <div class="bg-gray-900 rounded-lg p-4 flex justify-between items-center">
                                 <div>
                                     <div class="font-semibold">\${session.scenario_id || 'Practice Session'}</div>
                                     <div class="text-sm text-gray-500">\${new Date(session.session_start * 1000).toLocaleString()}</div>
@@ -2741,7 +2741,7 @@ app.get('/practice', authMiddleware, async (c) => {
                         <i class="fas fa-arrow-up mr-2"></i>
                         View Plans & Upgrade
                     </a>
-                    <a href="/account" class="block w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-lg text-center transition-all">
+                    <a href="/account" class="block w-full bg-slate-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg text-center transition-all">
                         <i class="fas fa-user mr-2"></i>
                         Go to Account
                     </a>
