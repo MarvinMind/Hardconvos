@@ -517,6 +517,9 @@ app.get('/api/usage/balance', authMiddleware, async (c) => {
     const { DB } = c.env
     const userId = c.get('userId')
     
+    // Get subscription info
+    const subscription = await db.getUserSubscription(DB, userId)
+    
     const creditBalance = await db.getCreditBalance(DB, userId)
     
     if (!creditBalance) {
@@ -524,17 +527,25 @@ app.get('/api/usage/balance', authMiddleware, async (c) => {
         balance_seconds: 0,
         balance_minutes: 0,
         type: 'none',
-        period_end: null
+        period_end: null,
+        unlimited: false,
+        plan_id: subscription?.plan_id || 'free'
       })
     }
     
+    const balanceMinutes = Math.floor(creditBalance.balance_seconds / 60)
+    const isUnlimited = balanceMinutes > 100000 // Over 100k minutes considered unlimited
+    
     return c.json({
       balance_seconds: creditBalance.balance_seconds,
-      balance_minutes: Math.floor(creditBalance.balance_seconds / 60),
+      balance_minutes: balanceMinutes,
       original_seconds: creditBalance.original_balance_seconds,
       original_minutes: Math.floor(creditBalance.original_balance_seconds / 60),
       type: creditBalance.type,
-      period_end: creditBalance.period_end
+      period_end: creditBalance.period_end,
+      unlimited: isUnlimited,
+      plan_id: subscription?.plan_id || 'free',
+      status: subscription?.status || 'none'
     })
   } catch (error: any) {
     console.error('Get balance error:', error)
