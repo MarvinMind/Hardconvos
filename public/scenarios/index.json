@@ -7,21 +7,27 @@
       "featured": true
     },
     {
+      "id": "job-interview",
+      "file": "job-interview.json",
+      "order": 2,
+      "featured": true
+    },
+    {
       "id": "hr-disciplinary",
       "file": "hr-disciplinary.json",
-      "order": 2,
+      "order": 3,
       "featured": true
     },
     {
       "id": "sales-gatekeeper",
       "file": "sales-gatekeeper.json",
-      "order": 3,
+      "order": 4,
       "featured": true
     },
     {
       "id": "client-escalation",
       "file": "client-escalation.json",
-      "order": 4,
+      "order": 5,
       "featured": true
     }
   ],

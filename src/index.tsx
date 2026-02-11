@@ -1199,33 +1199,33 @@ app.get('/login', (c) => {
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
     </head>
-    <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+    <body class="bg-gray-50 min-h-screen">
         <div class="container mx-auto px-4 py-16 max-w-md">
             <!-- Logo -->
             <div class="text-center mb-8">
                 <h1 class="text-5xl mb-2">🐾</h1>
-                <h2 class="text-3xl font-bold mb-2">PAWS</h2>
-                <p class="text-slate-400">Personalized Anxiety Work-through System</p>
+                <h2 class="text-3xl font-bold mb-2 text-gray-900">PAWS</h2>
+                <p class="text-gray-600">Personalized Anxiety Work-through System</p>
             </div>
 
             <!-- Login Form -->
-            <div class="bg-slate-800 rounded-lg p-8 border border-slate-700">
-                <h3 class="text-2xl font-semibold mb-6">Welcome Back</h3>
+            <div class="bg-white rounded-lg p-8 border border-gray-200 shadow-sm">
+                <h3 class="text-2xl font-semibold mb-6 text-gray-900">Welcome Back</h3>
                 
                 <form id="loginForm" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium mb-2">Email</label>
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Email</label>
                         <input type="email" id="email" required
-                            class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
+                            class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-gray-900">
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium mb-2">Password</label>
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Password</label>
                         <input type="password" id="password" required
-                            class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
+                            class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-gray-900">
                     </div>
 
-                    <div id="error" class="hidden bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm"></div>
+                    <div id="error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
 
                     <button type="submit" id="submitBtn"
                         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200">
@@ -1234,8 +1234,8 @@ app.get('/login', (c) => {
                     </button>
                 </form>
 
-                <div class="mt-6 text-center text-sm text-slate-400">
-                    Don't have an account? <a href="/register" class="text-blue-400 hover:text-blue-300">Sign up</a>
+                <div class="mt-6 text-center text-sm text-gray-600">
+                    Don't have an account? <a href="/register" class="text-blue-600 hover:text-blue-700">Sign up</a>
                 </div>
             </div>
         </div>
@@ -1301,40 +1301,40 @@ app.get('/register', (c) => {
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
     </head>
-    <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+    <body class="bg-gray-50 min-h-screen">
         <div class="container mx-auto px-4 py-16 max-w-md">
             <!-- Logo -->
             <div class="text-center mb-8">
                 <h1 class="text-5xl mb-2">🐾</h1>
-                <h2 class="text-3xl font-bold mb-2">PAWS</h2>
-                <p class="text-slate-400">Get 2 free minutes to try it out</p>
+                <h2 class="text-3xl font-bold mb-2 text-gray-900">PAWS</h2>
+                <p class="text-gray-600">Get 2 free minutes to try it out</p>
             </div>
 
             <!-- Register Form -->
-            <div class="bg-slate-800 rounded-lg p-8 border border-slate-700">
-                <h3 class="text-2xl font-semibold mb-6">Create Account</h3>
+            <div class="bg-white rounded-lg p-8 border border-gray-200 shadow-sm">
+                <h3 class="text-2xl font-semibold mb-6 text-gray-900">Create Account</h3>
                 
                 <form id="registerForm" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium mb-2">Name (Optional)</label>
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Name (Optional)</label>
                         <input type="text" id="name"
-                            class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
+                            class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-gray-900">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium mb-2">Email</label>
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Email</label>
                         <input type="email" id="email" required
-                            class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
+                            class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-gray-900">
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium mb-2">Password</label>
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Password</label>
                         <input type="password" id="password" required
-                            class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
-                        <p class="text-xs text-slate-400 mt-1">At least 8 characters, with a letter and number</p>
+                            class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-gray-900">
+                        <p class="text-xs text-gray-500 mt-1">At least 8 characters, with a letter and number</p>
                     </div>
 
-                    <div id="error" class="hidden bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm"></div>
+                    <div id="error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
 
                     <button type="submit" id="submitBtn"
                         class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200">
@@ -1343,8 +1343,8 @@ app.get('/register', (c) => {
                     </button>
                 </form>
 
-                <div class="mt-6 text-center text-sm text-slate-400">
-                    Already have an account? <a href="/login" class="text-blue-400 hover:text-blue-300">Login</a>
+                <div class="mt-6 text-center text-sm text-gray-600">
+                    Already have an account? <a href="/login" class="text-blue-600 hover:text-blue-700">Login</a>
                 </div>
             </div>
         </div>
@@ -1411,11 +1411,11 @@ app.get('/pricing', (c) => {
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
     </head>
-    <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+    <body class="bg-gray-50 min-h-screen">
         <!-- Header -->
         <div class="container mx-auto px-4 py-8">
             <div class="flex justify-between items-center">
-                <a href="/" class="text-3xl">🐾 PAWS</a>
+                <a href="/" class="text-3xl text-gray-900 font-bold">🐾 PAWS</a>
                 <div id="authNav" class="space-x-4">
                     <!-- Will be populated by JavaScript -->
                 </div>
@@ -1425,29 +1425,29 @@ app.get('/pricing', (c) => {
         <div class="container mx-auto px-4 py-8 max-w-7xl">
             <!-- Heading -->
             <div class="text-center mb-12">
-                <h1 class="text-4xl font-bold mb-4">Choose Your Plan</h1>
-                <p class="text-xl text-slate-400">Practice difficult conversations with AI-powered coaching</p>
+                <h1 class="text-4xl font-bold mb-4 text-gray-900">Choose Your Plan</h1>
+                <p class="text-xl text-gray-600">Practice difficult conversations with AI-powered coaching</p>
             </div>
 
             <!-- Pricing Cards -->
             <div id="pricingContainer" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                 <!-- Loading state -->
                 <div class="col-span-full text-center py-12">
-                    <i class="fas fa-spinner fa-spin text-4xl text-blue-400"></i>
-                    <p class="mt-4 text-slate-400">Loading pricing plans...</p>
+                    <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+                    <p class="mt-4 text-gray-600">Loading pricing plans...</p>
                 </div>
             </div>
 
             <!-- Feature Comparison -->
-            <div class="bg-slate-800 rounded-lg p-8 border border-slate-700 mb-8">
-                <h2 class="text-2xl font-bold mb-6 text-center">Free vs Premium Features</h2>
+            <div class="bg-white rounded-lg p-8 border border-gray-200 shadow-sm mb-8">
+                <h2 class="text-2xl font-bold mb-6 text-center text-gray-900">Free vs Premium Features</h2>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead>
-                            <tr class="border-b border-slate-700">
-                                <th class="py-3 px-4 text-slate-400 font-semibold">Feature</th>
-                                <th class="py-3 px-4 text-center">Free Tier</th>
-                                <th class="py-3 px-4 text-center">Paid Tiers</th>
+                            <tr class="border-b border-gray-200">
+                                <th class="py-3 px-4 text-gray-600 font-semibold">Feature</th>
+                                <th class="py-3 px-4 text-center text-gray-900">Free Tier</th>
+                                <th class="py-3 px-4 text-center text-gray-900">Paid Tiers</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2320,8 +2320,200 @@ app.get('/account', (c) => {
 })
 
 // Main page - redirect to setup (or login if not authenticated)
+// Hero landing page
 app.get('/', (c) => {
-  return c.redirect('/setup')
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PAWS - Personalized Anxiety Work-through System</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body class="bg-white min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="text-4xl mr-2">🐾</span>
+                        <span class="text-2xl font-bold text-gray-900">PAWS</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="/pricing" class="text-gray-600 hover:text-gray-900 font-medium">Pricing</a>
+                        <a href="/login" class="text-gray-600 hover:text-gray-900 font-medium">Login</a>
+                        <a href="/register" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold">Get Started</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="py-20 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+            <div class="container mx-auto px-4 text-center">
+                <div class="max-w-4xl mx-auto">
+                    <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                        Take a <span class="text-blue-600">PAWS</span> before that hard conversation
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                        Practice difficult conversations with AI before they happen. Build confidence, 
+                        reduce anxiety, and master communication skills in a safe, judgment-free environment.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="/register" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all transform hover:scale-105">
+                            <i class="fas fa-play mr-2"></i>
+                            Start Free Trial
+                        </a>
+                        <a href="/setup" class="bg-white border-2 border-gray-300 hover:border-blue-600 text-gray-900 px-8 py-4 rounded-lg font-bold text-lg transition-all">
+                            <i class="fas fa-eye mr-2"></i>
+                            See How It Works
+                        </a>
+                    </div>
+                    
+                    <div class="mt-12">
+                        <p class="text-sm text-gray-500 mb-4">Used by professionals at</p>
+                        <div class="flex flex-wrap justify-center gap-8 items-center opacity-50">
+                            <div class="text-2xl font-bold text-gray-400">Tech Startups</div>
+                            <div class="text-2xl font-bold text-gray-400">Consulting Firms</div>
+                            <div class="text-2xl font-bold text-gray-400">Sales Teams</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-20 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Why Use PAWS?</h2>
+                    <p class="text-xl text-gray-600">Real practice for real conversations</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <div class="bg-blue-50 rounded-xl p-8 border border-blue-100">
+                        <div class="text-4xl mb-4">🎯</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Realistic Scenarios</h3>
+                        <p class="text-gray-600">Practice salary negotiations, difficult clients, HR situations, and more with AI that responds like a real person.</p>
+                    </div>
+                    
+                    <div class="bg-purple-50 rounded-xl p-8 border border-purple-100">
+                        <div class="text-4xl mb-4">📊</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Instant Feedback</h3>
+                        <p class="text-gray-600">Get detailed analysis of your performance with actionable coaching points after every session.</p>
+                    </div>
+                    
+                    <div class="bg-green-50 rounded-xl p-8 border border-green-100">
+                        <div class="text-4xl mb-4">🔒</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Safe Practice</h3>
+                        <p class="text-gray-600">Make mistakes without consequences. Build confidence in a judgment-free environment.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenarios Section -->
+        <section class="py-20 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Practice Any Difficult Conversation</h2>
+                    <p class="text-xl text-gray-600">Choose from our library of real-world scenarios</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                    <div class="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+                        <div class="text-3xl mb-3">💼</div>
+                        <h3 class="font-bold text-gray-900 mb-2">Salary Negotiation</h3>
+                        <p class="text-sm text-gray-600">Practice asking for what you're worth</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+                        <div class="text-3xl mb-3">👔</div>
+                        <h3 class="font-bold text-gray-900 mb-2">Job Interview</h3>
+                        <p class="text-sm text-gray-600">Ace your next interview with confidence</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+                        <div class="text-3xl mb-3">📞</div>
+                        <h3 class="font-bold text-gray-900 mb-2">Difficult Clients</h3>
+                        <p class="text-sm text-gray-600">Handle escalated customer situations</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+                        <div class="text-3xl mb-3">🎤</div>
+                        <h3 class="font-bold text-gray-900 mb-2">HR Conversations</h3>
+                        <p class="text-sm text-gray-600">Navigate sensitive workplace issues</p>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-12">
+                    <a href="/setup" class="text-blue-600 hover:text-blue-700 font-semibold text-lg">
+                        View all scenarios <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+            <div class="container mx-auto px-4 text-center">
+                <div class="max-w-3xl mx-auto">
+                    <h2 class="text-4xl font-bold text-white mb-6">Ready to master difficult conversations?</h2>
+                    <p class="text-xl text-blue-100 mb-8">Start with 2 minutes free. No credit card required.</p>
+                    <a href="/register" class="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-lg font-bold text-lg inline-block transition-all transform hover:scale-105">
+                        <i class="fas fa-rocket mr-2"></i>
+                        Get Started Now
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-gray-400 py-12">
+            <div class="container mx-auto px-4">
+                <div class="grid md:grid-cols-4 gap-8 mb-8">
+                    <div>
+                        <div class="flex items-center mb-4">
+                            <span class="text-3xl mr-2">🐾</span>
+                            <span class="text-xl font-bold text-white">PAWS</span>
+                        </div>
+                        <p class="text-sm">Personalized Anxiety Work-through System</p>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-semibold mb-4">Product</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="/pricing" class="hover:text-white">Pricing</a></li>
+                            <li><a href="/setup" class="hover:text-white">Scenarios</a></li>
+                            <li><a href="/features" class="hover:text-white">Features</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-semibold mb-4">Company</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="/about" class="hover:text-white">About</a></li>
+                            <li><a href="/blog" class="hover:text-white">Blog</a></li>
+                            <li><a href="/contact" class="hover:text-white">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-semibold mb-4">Legal</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="/privacy" class="hover:text-white">Privacy Policy</a></li>
+                            <li><a href="/terms" class="hover:text-white">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-gray-800 pt-8 text-center text-sm">
+                    <p>&copy; 2026 PAWS. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </body>
+    </html>
+  `)
 })
 
 // Setup wizard page
@@ -2337,15 +2529,15 @@ app.get('/setup', (c) => {
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
     </head>
-    <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+    <body class="bg-gray-50 min-h-screen">
         <div class="container mx-auto px-4 py-8 max-w-6xl">
             <!-- Header -->
             <div class="text-center mb-6">
-                <h1 class="text-3xl font-bold mb-2 flex items-center justify-center">
+                <h1 class="text-3xl font-bold mb-2 flex items-center justify-center text-gray-900">
                     <span class="text-5xl mr-3">🐾</span>
                     PAWS Setup
                 </h1>
-                <p class="text-slate-400 italic">Configure your personalized fear rehearsal</p>
+                <p class="text-gray-600 italic">Configure your personalized fear rehearsal</p>
             </div>
 
             <!-- Progress Bar -->
@@ -2403,16 +2595,16 @@ app.get('/practice', authMiddleware, async (c) => {
           }
         </style>
     </head>
-    <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
+    <body class="bg-gray-50 min-h-screen">
         <div class="container mx-auto px-4 py-8 max-w-6xl">
             <!-- Header -->
             <div class="text-center mb-8">
-                <h1 class="text-4xl font-bold mb-2 flex items-center justify-center">
+                <h1 class="text-4xl font-bold mb-2 flex items-center justify-center text-gray-900">
                     <span class="text-6xl mr-3">🐾</span>
                     PAWS
                 </h1>
-                <p class="text-slate-400 italic">Take a PAWS before that hard conversation</p>
-                <p class="text-slate-500 text-sm mt-1">Personalized Anxiety Work-through System</p>
+                <p class="text-gray-600 italic">Take a PAWS before that hard conversation</p>
+                <p class="text-gray-500 text-sm mt-1">Personalized Anxiety Work-through System</p>
                 <div class="mt-3">
                   ${tierBadge}
                 </div>
@@ -2421,46 +2613,46 @@ app.get('/practice', authMiddleware, async (c) => {
             <!-- Main Content -->
             <div class="grid md:grid-cols-2 gap-6">
                 <!-- Left Panel: Session Controls -->
-                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                    <h2 class="text-xl font-semibold mb-4">
-                        <i class="fas fa-microphone mr-2 text-green-400"></i>
+                <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-900">
+                        <i class="fas fa-microphone mr-2 text-green-500"></i>
                         Session Control
                     </h2>
                     
                     <!-- Status -->
                     <div class="mb-6">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm text-slate-400">Status:</span>
-                            <span id="status" class="text-sm font-semibold text-yellow-400">Disconnected</span>
+                            <span class="text-sm text-gray-600">Status:</span>
+                            <span id="status" class="text-sm font-semibold text-yellow-600">Disconnected</span>
                         </div>
-                        <div class="w-full bg-slate-700 rounded-full h-2">
-                            <div id="statusBar" class="bg-yellow-400 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="statusBar" class="bg-yellow-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
                         </div>
                     </div>
 
                     <!-- Scenario Info -->
-                    <div class="mb-6 p-4 bg-slate-900 rounded border border-slate-700">
-                        <h3 class="text-sm font-semibold mb-2 text-blue-300">Your Scenario:</h3>
-                        <p id="scenarioTitle" class="text-sm text-slate-300 mb-2 font-semibold">Loading...</p>
-                        <div id="scenarioInfo" class="text-xs text-slate-400">
+                    <div class="mb-6 p-4 bg-blue-50 rounded border border-blue-100">
+                        <h3 class="text-sm font-semibold mb-2 text-blue-700">Your Scenario:</h3>
+                        <p id="scenarioTitle" class="text-sm text-gray-900 mb-2 font-semibold">Loading...</p>
+                        <div id="scenarioInfo" class="text-xs text-gray-600">
                           Configuring your personalized session...
                         </div>
                     </div>
 
                     <!-- Timer & Balance Display -->
-                    <div id="timerDisplay" class="mb-6 p-4 bg-slate-900 rounded border border-slate-700">
+                    <div id="timerDisplay" class="mb-6 p-4 bg-purple-50 rounded border border-purple-100">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm text-slate-400">Remaining Time:</span>
-                            <span id="remainingTime" class="text-2xl font-bold text-blue-400">--:--</span>
+                            <span class="text-sm text-gray-600">Remaining Time:</span>
+                            <span id="remainingTime" class="text-2xl font-bold text-purple-600">--:--</span>
                         </div>
-                        <div class="w-full bg-slate-700 rounded-full h-2">
-                            <div id="timeBar" class="bg-blue-500 h-2 rounded-full transition-all" style="width: 100%"></div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="timeBar" class="bg-purple-500 h-2 rounded-full transition-all" style="width: 100%"></div>
                         </div>
-                        <div id="balanceWarning" class="hidden mt-2 text-xs text-yellow-400">
+                        <div id="balanceWarning" class="hidden mt-2 text-xs text-yellow-600">
                             <i class="fas fa-exclamation-triangle mr-1"></i>
                             <span>Low balance warning</span>
                         </div>
-                        <div id="graceWarning" class="hidden mt-2 text-xs text-orange-400 font-semibold">
+                        <div id="graceWarning" class="hidden mt-2 text-xs text-orange-600 font-semibold">
                             <i class="fas fa-hourglass-half mr-1"></i>
                             <span>Grace period: <span id="graceTime">2:00</span> remaining</span>
                         </div>
